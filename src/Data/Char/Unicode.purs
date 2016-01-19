@@ -11,56 +11,53 @@ import Data.Maybe
 -- the order they are listed in the Unicode standard (the Unicode
 -- Character Database, in particular).
 --
--- ==== __Examples__
+-- #### __Examples__
 --
 -- Basic usage:
 --
+-- ```
 -- >>> :t OtherLetter
 -- OtherLetter :: GeneralCategory
+-- ```
 --
 -- 'Eq' instance:
 --
+-- ```
 -- >>> UppercaseLetter == UppercaseLetter
 -- True
 -- >>> UppercaseLetter == LowercaseLetter
 -- False
+-- ```
 --
 -- 'Ord' instance:
 --
+-- ```
 -- >>> NonSpacingMark <= MathSymbol
 -- True
+-- ```
 --
 -- 'Enum' instance:
 --
+-- ```
 -- >>> enumFromTo ModifierLetter SpacingCombiningMark
 -- [ModifierLetter,OtherLetter,NonSpacingMark,SpacingCombiningMark]
---
--- 'Read' instance:
---
--- >>> read "DashPunctuation" :: GeneralCategory
--- DashPunctuation
--- >>> read "17" :: GeneralCategory
--- *** Exception: Prelude.read: no parse
+-- ```
 --
 -- 'Show' instance:
 --
+-- ```
 -- >>> show EnclosingMark
 -- "EnclosingMark"
+-- ```
 --
 -- 'Bounded' instance:
 --
--- >>> minBound :: GeneralCategory
+-- ```
+-- >>> bottom :: GeneralCategory
 -- UppercaseLetter
--- >>> maxBound :: GeneralCategory
+-- >>> top :: GeneralCategory
 -- NotAssigned
---
--- 'Ix' instance:
---
---  >>> import Data.Ix ( index )
---  >>> index (OtherLetter,Control) FinalQuote
---  12
---  >>> index (OtherLetter,Control) Format
---  *** Exception: Error in array index
+-- ```
 data GeneralCategory
         = UppercaseLetter       -- ^ Lu: Letter, Uppercase
         | LowercaseLetter       -- ^ Ll: Letter, Lowercase
@@ -92,7 +89,6 @@ data GeneralCategory
         | Surrogate             -- ^ Cs: Other, Surrogate
         | PrivateUse            -- ^ Co: Other, Private Use
         | NotAssigned           -- ^ Cn: Other, Not Assigned
--- deriving (Show, Eq, Ord, Enum, Bounded, Ix)
 
 generalCatToInt :: GeneralCategory -> Int
 generalCatToInt UppercaseLetter = 1
@@ -262,30 +258,31 @@ instance boundedGeneralCategory :: Bounded GeneralCategory where
     bottom = UppercaseLetter
     top = NotAssigned
 
--- -- | The Unicode general category of the character. This relies on the
--- -- 'Enum' instance of 'GeneralCategory', which must remain in the
--- -- same order as the categories are presented in the Unicode
--- -- standard.
--- --
--- -- ==== __Examples__
--- --
--- -- Basic usage:
--- --
--- -- >>> generalCategory 'a'
--- -- LowercaseLetter
--- -- >>> generalCategory 'A'
--- -- UppercaseLetter
--- -- >>> generalCategory '0'
--- -- DecimalNumber
--- -- >>> generalCategory '%'
--- -- OtherPunctuation
--- -- >>> generalCategory '♥'
--- -- OtherSymbol
--- -- >>> generalCategory '\31'
--- -- Control
--- -- >>> generalCategory ' '
--- -- Space
--- --
+-- | The Unicode general category of the character. This relies on the
+-- 'Enum' instance of 'GeneralCategory', which must remain in the
+-- same order as the categories are presented in the Unicode
+-- standard.
+--
+-- #### __Examples__
+--
+-- Basic usage:
+--
+-- ```
+-- >>> generalCategory 'a'
+-- LowercaseLetter
+-- >>> generalCategory 'A'
+-- UppercaseLetter
+-- >>> generalCategory '0'
+-- DecimalNumber
+-- >>> generalCategory '%'
+-- OtherPunctuation
+-- >>> generalCategory '♥'
+-- OtherSymbol
+-- >>> generalCategory '\31'
+-- Control
+-- >>> generalCategory ' '
+-- Space
+-- ```
 generalCategory :: Char -> Maybe GeneralCategory
 generalCategory = map unicodeCatToGeneralCat <<< uGencat <<< toCharCode
 
@@ -300,12 +297,12 @@ isLatin1 :: Char -> Boolean
 isLatin1 c =  c <= '\xff'
 
 -- | Selects ASCII lower-case letters,
--- i.e. characters satisfying both 'isAscii' and 'isLower'.
+-- i.e. characters satisfying both `isAscii` and `isLower`.
 isAsciiLower :: Char -> Boolean
 isAsciiLower c =  c >= 'a' && c <= 'z'
 
 -- | Selects ASCII upper-case letters,
--- i.e. characters satisfying both 'isAscii' and 'isUpper'.
+-- i.e. characters satisfying both `isAscii` and `isUpper`.
 isAsciiUpper :: Char -> Boolean
 isAsciiUpper c =  c >= 'A' && c <= 'Z'
 
@@ -319,17 +316,16 @@ isControl = uIswcntrl <<< toCharCode
 isPrint :: Char -> Boolean
 isPrint = uIswprint <<< toCharCode
 
--- | Returns 'True' for any Unicode space character, and the control
--- characters @\\t@, @\\n@, @\\r@, @\\f@, @\\v@.
+-- | Returns `True` for any Unicode space character, and the control
+-- characters `\t`, `\n`, `\r`, `\f`, `\v`.
+--
+-- `isSpace` includes non-breaking space.
 isSpace :: Char -> Boolean
--- isSpace includes non-breaking space
--- The magic 0x377 isn't really that magical. As of 2014, all the codepoints
--- at or below 0x377 have been assigned, so we shouldn't have to worry about
--- any new spaces appearing below there. It would probably be best to
--- use branchless ||, but currently the eqLit transformation will undo that,
--- so we'll do it like this until there's a way around that.
+-- The magic 0x377 used in the code below isn't really that magical. As of
+-- 2014, all the codepoints at or below 0x377 have been assigned, so we
+-- shouldn't have to worry about any new spaces appearing below there.
 isSpace c = if uc <= 0x337
-               then uc == 32 || uc - 0x9 <= 4 || uc == 0xa0
+               then uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
                else uIswspace $ toCharCode c
   where
     uc :: Int
@@ -347,74 +343,71 @@ isLower = uIswlower <<< toCharCode
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- title-case letters, plus letters of caseless scripts and modifiers letters).
--- This function is equivalent to 'Data.Char.isLetter'.
 isAlpha :: Char -> Boolean
 isAlpha = uIswalpha <<< toCharCode
 
 -- | Selects alphabetic or numeric digit Unicode characters.
 --
 -- Note that numeric digits outside the ASCII range are selected by this
--- function but not by 'isDigit'.  Such digits may be part of identifiers
+-- function but not by `isDigit`.  Such digits may be part of identifiers
 -- but are not used by the printer and reader to represent numbers.
 isAlphaNum :: Char -> Boolean
 isAlphaNum = uIswalnum <<< toCharCode
 
--- | Selects ASCII digits, i.e. @\'0\'@..@\'9\'@.
+-- | Selects ASCII digits, i.e. `0..9`.
 isDigit :: Char -> Boolean
-isDigit c = (toCharCode c - toCharCode '0') <= 9
+isDigit c = let diff = (toCharCode c - toCharCode '0')
+            in diff <= 9 && diff >= 0
 
--- We use an addition and an unsigned comparison instead of two signed
--- comparisons because it's usually faster and puts less strain on branch
--- prediction. It likely also enables some CSE when combined with functions
--- that follow up with an actual conversion.
-
--- | Selects ASCII octal digits, i.e. @\'0\'@..@\'7\'@.
+-- | Selects ASCII octal digits, i.e. `0..7`.
 isOctDigit :: Char -> Boolean
-isOctDigit c = (toCharCode c - toCharCode '0') <= 7
+isOctDigit c = let diff = (toCharCode c - toCharCode '0')
+               in diff <= 7 && diff >= 0
 
 -- | Selects ASCII hexadecimal digits,
--- i.e. @\'0\'@..@\'9\'@, @\'a\'@..@\'f\'@, @\'A\'@..@\'F\'@.
+-- i.e. `0..9, A..F, a..f`.
 isHexDigit :: Char -> Boolean
 isHexDigit c = isDigit c
-            || (toCharCode c - toCharCode 'A') <= 5
-            || (toCharCode c - toCharCode 'a') <= 5
+            || let diff = (toCharCode c - toCharCode 'A') in diff <= 5 && diff >= 0
+            || let diff = (toCharCode c - toCharCode 'a') in diff <= 5 && diff >= 0
 
 -- | Selects Unicode punctuation characters, including various kinds
 -- of connectors, brackets and quotes.
 --
--- This function returns 'True' if its argument has one of the
--- following 'GeneralCategory's, or 'False' otherwise:
+-- This function returns `true` if its argument has one of the
+-- following `GeneralCategory`s, or `false` otherwise:
 --
--- * 'ConnectorPunctuation'
--- * 'DashPunctuation'
--- * 'OpenPunctuation'
--- * 'ClosePunctuation'
--- * 'InitialQuote'
--- * 'FinalQuote'
--- * 'OtherPunctuation'
+-- - `ConnectorPunctuation`
+-- - `DashPunctuation`
+-- - `OpenPunctuation`
+-- - `ClosePunctuation`
+-- - `InitialQuote`
+-- - `FinalQuote`
+-- - `OtherPunctuation`
 --
 -- These classes are defined in the
--- <http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table Unicode Character Database>,
+-- [Unicode Character Database])http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table)
 -- part of the Unicode standard. The same document defines what is
--- and is not a \"Punctuation\".
+-- and is not a "Punctuation".
 --
--- ==== __Examples__
+-- #### __Examples__
 --
 -- Basic usage:
 --
+-- ```
 -- >>> isPunctuation 'a'
--- False
+-- false
 -- >>> isPunctuation '7'
--- False
+-- false
 -- >>> isPunctuation '♥'
--- False
+-- false
 -- >>> isPunctuation '"'
--- True
+-- true
 -- >>> isPunctuation '?'
--- True
+-- true
 -- >>> isPunctuation '—'
--- True
---
+-- true
+-- ```
 isPunctuation :: Char -> Boolean
 isPunctuation c =
     case generalCategory c of
@@ -430,38 +423,41 @@ isPunctuation c =
 -- | Selects Unicode symbol characters, including mathematical and
 -- currency symbols.
 --
--- This function returns 'True' if its argument has one of the
--- following 'GeneralCategory's, or 'False' otherwise:
+-- This function returns `true` if its argument has one of the
+-- following `GeneralCategory`s, or `false` otherwise:
 --
--- * 'MathSymbol'
--- * 'CurrencySymbol'
--- * 'ModifierSymbol'
--- * 'OtherSymbol'
+-- - `MathSymbol`
+-- - `CurrencySymbol`
+-- - `ModifierSymbol`
+-- - `OtherSymbol`
 --
 -- These classes are defined in the
--- <http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table Unicode Character Database>,
+-- [Unicode Character Database](http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table),
 -- part of the Unicode standard. The same document defines what is
--- and is not a \"Symbol\".
+-- and is not a "Symbol".
 --
--- ==== __Examples__
+-- #### __Examples__
 --
 -- Basic usage:
 --
+-- ```
 -- >>> isSymbol 'a'
--- False
+-- false
 -- >>> isSymbol '6'
--- False
+-- false
 -- >>> isSymbol '='
--- True
+-- true
+-- ```
 --
 -- The definition of \"math symbol\" may be a little
 -- counter-intuitive depending on one's background:
 --
+-- ```
 -- >>> isSymbol '+'
--- True
+-- true
 -- >>> isSymbol '-'
--- False
---
+-- false
+-- ```
 isSymbol :: Char -> Boolean
 isSymbol c =
     case generalCategory c of
@@ -488,33 +484,39 @@ toLower = fromCharCode <<< uTowlower <<< toCharCode
 toTitle :: Char -> Char
 toTitle = fromCharCode <<< uTowtitle <<< toCharCode
 
--- | Convert a single digit 'Char' to the corresponding 'Int'.  This
--- function fails unless its argument satisfies 'isHexDigit', but
+-- | Convert a single digit `Char` to the corresponding `Int`.  This
+-- function fails unless its argument satisfies `isHexDigit`, but
 -- recognises both upper- and lower-case hexadecimal digits (that
--- is, @\'0\'@..@\'9\'@, @\'a\'@..@\'f\'@, @\'A\'@..@\'F\'@).
+-- is, `0..9, A..F, a..f`.
 --
--- ==== __Examples__
+-- #### __Examples__
 --
--- Characters @\'0\'@ through @\'9\'@ are converted properly to
--- @0..9@:
+-- Characters `0` through `9` are converted properly to
+-- `0..9`:
 --
+-- ```
 -- >>> map digitToInt ['0'..'9']
 -- [0,1,2,3,4,5,6,7,8,9]
+-- ```
 --
--- Both upper- and lower-case @\'A\'@ through @\'F\'@ are converted
--- as well, to @10..15@.
+-- Both upper- and lower-case `A` through `F` are converted
+-- as well, to `10..15`.
 --
+-- ```
 -- >>> map digitToInt ['a'..'f']
 -- [10,11,12,13,14,15]
 -- >>> map digitToInt ['A'..'F']
 -- [10,11,12,13,14,15]
+-- ```
 --
 -- Anything else throws an exception:
 --
+-- ```
 -- >>> digitToInt 'G'
 -- *** Exception: Char.digitToInt: not a digit 'G'
 -- >>> digitToInt '♥'
 -- *** Exception: Char.digitToInt: not a digit '\9829'
+-- ```
 --
 -- TODO: This function.
 --
@@ -532,26 +534,27 @@ toTitle = fromCharCode <<< uTowtitle <<< toCharCode
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- title-case letters, plus letters of caseless scripts and
 -- modifiers letters). This function is equivalent to
--- 'Data.Char.isAlpha'.
+-- `Data.Char.isAlpha`.
 --
--- This function returns 'True' if its argument has one of the
--- following 'GeneralCategory's, or 'False' otherwise:
+-- This function returns `True` if its argument has one of the
+-- following `GeneralCategory`s, or `False` otherwise:
 --
--- * 'UppercaseLetter'
--- * 'LowercaseLetter'
--- * 'TitlecaseLetter'
--- * 'ModifierLetter'
--- * 'OtherLetter'
+-- - `UppercaseLetter`
+-- - `LowercaseLetter`
+-- - `TitlecaseLetter`
+-- - `ModifierLetter`
+-- - `OtherLetter`
 --
 -- These classes are defined in the
--- <http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table Unicode Character Database>,
+-- [Unicode Character Database](http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table)
 -- part of the Unicode standard. The same document defines what is
--- and is not a \"Letter\".
+-- and is not a "Letter".
 --
--- ==== __Examples__
+-- ####  __Examples__
 --
 -- Basic usage:
 --
+-- ```
 -- >>> isLetter 'a'
 -- True
 -- >>> isLetter 'A'
@@ -564,14 +567,17 @@ toTitle = fromCharCode <<< uTowtitle <<< toCharCode
 -- False
 -- >>> isLetter '\31'
 -- False
+-- ```
 --
 -- Ensure that 'isLetter' and 'isAlpha' are equivalent.
 --
+-- ```
 -- >>> let chars = [(chr 0)..]
 -- >>> let letters = map isLetter chars
 -- >>> let alphas = map isAlpha chars
 -- >>> letters == alphas
 -- True
+-- ```
 --
 isLetter :: Char -> Boolean
 isLetter c =
@@ -586,37 +592,43 @@ isLetter c =
 -- | Selects Unicode mark characters, for example accents and the
 -- like, which combine with preceding characters.
 --
--- This function returns 'True' if its argument has one of the
--- following 'GeneralCategory's, or 'False' otherwise:
+-- This function returns `true` if its argument has one of the
+-- following `GeneralCategory`s, or `false` otherwise:
 --
--- * 'NonSpacingMark'
--- * 'SpacingCombiningMark'
--- * 'EnclosingMark'
+-- - `NonSpacingMark`
+-- - `SpacingCombiningMark`
+-- - `EnclosingMark`
 --
 -- These classes are defined in the
--- <http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table Unicode Character Database>,
+-- [Unicode Character Database](http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table),
 -- part of the Unicode standard. The same document defines what is
--- and is not a \"Mark\".
+-- and is not a "Mark".
 --
--- ==== __Examples__
+-- #### __Examples__
 --
 -- Basic usage:
 --
+-- ```
 -- >>> isMark 'a'
--- False
+-- false
 -- >>> isMark '0'
--- False
+-- false
+-- ```
 --
 -- Combining marks such as accent characters usually need to follow
 -- another character before they become printable:
 --
+-- ```
 -- >>> map isMark "ò"
--- [False,True]
+-- [false,true]
+-- ```
 --
 -- Puns are not necessarily supported:
 --
+-- ```
 -- >>> isMark '✓'
--- False
+-- false
+-- ```
 --
 isMark :: Char -> Boolean
 isMark c =
@@ -629,39 +641,44 @@ isMark c =
 -- | Selects Unicode numeric characters, including digits from various
 -- scripts, Roman numerals, et cetera.
 --
--- This function returns 'True' if its argument has one of the
--- following 'GeneralCategory's, or 'False' otherwise:
+-- This function returns `true` if its argument has one of the
+-- following `GeneralCategory`s, or `false` otherwise:
 --
--- * 'DecimalNumber'
--- * 'LetterNumber'
--- * 'OtherNumber'
+-- * `DecimalNumber`
+-- * `LetterNumber`
+-- * `OtherNumber`
 --
 -- These classes are defined in the
--- <http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table Unicode Character Database>,
+-- [Unicode Character Database](http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table),
 -- part of the Unicode standard. The same document defines what is
--- and is not a \"Number\".
+-- and is not a "Number".
 --
--- ==== __Examples__
+-- #### __Examples__
 --
 -- Basic usage:
 --
+-- ```
 -- >>> isNumber 'a'
--- False
+-- false
 -- >>> isNumber '%'
--- False
+-- false
 -- >>> isNumber '3'
--- True
+-- true
+-- ```
 --
 -- ASCII @\'0\'@ through @\'9\'@ are all numbers:
 --
+-- ```
 -- >>> and $ map isNumber ['0'..'9']
--- True
+-- true
+-- ```
 --
 -- Unicode Roman numerals are \"numbers\" as well:
 --
+-- ```
 -- >>> isNumber 'Ⅸ'
--- True
---
+-- true
+-- ```
 isNumber :: Char -> Boolean
 isNumber c =
     case generalCategory c of
@@ -672,42 +689,47 @@ isNumber c =
 
 -- | Selects Unicode space and separator characters.
 --
--- This function returns 'True' if its argument has one of the
--- following 'GeneralCategory's, or 'False' otherwise:
+-- This function returns `true` if its argument has one of the
+-- following `GeneralCategory`s, or `false` otherwise:
 --
--- * 'Space'
--- * 'LineSeparator'
--- * 'ParagraphSeparator'
+-- - `Space`
+-- - `LineSeparator`
+-- - `ParagraphSeparator`
 --
 -- These classes are defined in the
--- <http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table Unicode Character Database>,
+-- [Unicode Character Database](http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table)
 -- part of the Unicode standard. The same document defines what is
--- and is not a \"Separator\".
+-- and is not a "Separator".
 --
--- ==== __Examples__
+-- #### __Examples__
 --
 -- Basic usage:
 --
+-- ```
 -- >>> isSeparator 'a'
--- False
+-- false
 -- >>> isSeparator '6'
--- False
+-- false
 -- >>> isSeparator ' '
--- True
+-- true
+-- ```
 --
 -- Warning: newlines and tab characters are not considered
 -- separators.
 --
+-- ```
 -- >>> isSeparator '\n'
--- False
+-- false
 -- >>> isSeparator '\t'
--- False
+-- false
+-- ```
 --
 -- But some more exotic characters are (like HTML's @&nbsp;@):
 --
+-- ```
 -- >>> isSeparator '\160'
--- True
---
+-- true
+-- ```
 isSeparator :: Char -> Boolean
 isSeparator c =
     case generalCategory c of
