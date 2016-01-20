@@ -24,4 +24,3 @@ can be generated with the following command:
 $ wget 'http://www.unicode.org/Public/6.0.0/ucd/UnicodeData.txt'
 $ ./ubconfc < UnicodeData.txt > src/Data/Char/Unicode/Internal.purs
 ```
-
