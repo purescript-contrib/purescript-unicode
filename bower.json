@@ -24,7 +24,7 @@
     "purescript-strings": "^0.7.0"
   },
   "devDependencies": {
-    "purescript-assert": "~0.1.0",
-    "purescript-console": "~0.1.0"
+    "purescript-console": "~0.1.0",
+    "purescript-super-spec": "~0.7.3"
   }
 }

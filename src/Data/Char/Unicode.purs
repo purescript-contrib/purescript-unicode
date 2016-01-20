@@ -20,7 +20,7 @@ import Data.Maybe
 -- OtherLetter :: GeneralCategory
 -- ```
 --
--- 'Eq' instance:
+-- `Eq` instance:
 --
 -- ```
 -- >>> UppercaseLetter == UppercaseLetter
@@ -29,28 +29,28 @@ import Data.Maybe
 -- False
 -- ```
 --
--- 'Ord' instance:
+-- `Ord` instance:
 --
 -- ```
 -- >>> NonSpacingMark <= MathSymbol
 -- True
 -- ```
 --
--- 'Enum' instance:
+-- `Enum` instance (TODO: this is not implemented yet):
 --
 -- ```
 -- >>> enumFromTo ModifierLetter SpacingCombiningMark
 -- [ModifierLetter,OtherLetter,NonSpacingMark,SpacingCombiningMark]
 -- ```
 --
--- 'Show' instance:
+-- `Show` instance:
 --
 -- ```
 -- >>> show EnclosingMark
 -- "EnclosingMark"
 -- ```
 --
--- 'Bounded' instance:
+-- `Bounded` instance:
 --
 -- ```
 -- >>> bottom :: GeneralCategory
@@ -258,10 +258,7 @@ instance boundedGeneralCategory :: Bounded GeneralCategory where
     bottom = UppercaseLetter
     top = NotAssigned
 
--- | The Unicode general category of the character. This relies on the
--- 'Enum' instance of 'GeneralCategory', which must remain in the
--- same order as the categories are presented in the Unicode
--- standard.
+-- | The Unicode general category of the character.
 --
 -- #### __Examples__
 --
@@ -269,19 +266,19 @@ instance boundedGeneralCategory :: Bounded GeneralCategory where
 --
 -- ```
 -- >>> generalCategory 'a'
--- LowercaseLetter
+-- Just LowercaseLetter
 -- >>> generalCategory 'A'
--- UppercaseLetter
+-- Just UppercaseLetter
 -- >>> generalCategory '0'
--- DecimalNumber
+-- Just DecimalNumber
 -- >>> generalCategory '%'
--- OtherPunctuation
+-- Just OtherPunctuation
 -- >>> generalCategory '♥'
--- OtherSymbol
+-- Just OtherSymbol
 -- >>> generalCategory '\31'
--- Control
+-- Just Control
 -- >>> generalCategory ' '
--- Space
+-- Just Space
 -- ```
 generalCategory :: Char -> Maybe GeneralCategory
 generalCategory = map unicodeCatToGeneralCat <<< uGencat <<< toCharCode
@@ -368,8 +365,8 @@ isOctDigit c = let diff = (toCharCode c - toCharCode '0')
 -- i.e. `0..9, A..F, a..f`.
 isHexDigit :: Char -> Boolean
 isHexDigit c = isDigit c
-            || let diff = (toCharCode c - toCharCode 'A') in diff <= 5 && diff >= 0
-            || let diff = (toCharCode c - toCharCode 'a') in diff <= 5 && diff >= 0
+            || (let diff = (toCharCode c - toCharCode 'A') in diff <= 5 && diff >= 0)
+            || (let diff = (toCharCode c - toCharCode 'a') in diff <= 5 && diff >= 0)
 
 -- | Selects Unicode punctuation characters, including various kinds
 -- of connectors, brackets and quotes.
