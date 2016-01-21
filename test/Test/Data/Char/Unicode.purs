@@ -37,6 +37,7 @@ dataCharUnicodeTests = describe "module Data.Char.Unicode" do
     toUpperTests
     toLowerTests
     toTitleTests
+    digitToIntTests
     isLetterTests
     isMarkTests
     isNumberTests
@@ -320,6 +321,24 @@ toLowerTests :: forall eff . Spec eff Unit
 toLowerTests = pure unit
 toTitleTests :: forall eff . Spec eff Unit
 toTitleTests = pure unit
+
+digitToIntTests :: forall eff . Spec eff Unit
+digitToIntTests = describe "digitToInt" do
+    it "'0'..'9' get mapped correctly" $
+        map digitToInt ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
+            [Just 0, Just 1, Just 2, Just 3, Just 4, Just 5, Just 6, Just 7, Just 8, Just 9]
+    it "'a'..'f' get mapped correctly" $
+        map digitToInt ['a','b','c','d','e','f'] `shouldEqual`
+            [Just 10, Just 11, Just 12, Just 13, Just 14, Just 15]
+    it "'A'..'F' get mapped correctly" $
+        map digitToInt ['A','B','C','D','E','F'] `shouldEqual`
+            [Just 10, Just 11, Just 12, Just 13, Just 14, Just 15]
+    it "'G' is not a digit" $
+        digitToInt 'G' `shouldEqual` Nothing
+    it "'♥' is not a digit" $
+        digitToInt '♥' `shouldEqual` Nothing
+    it "'国' is not a digit" $
+        digitToInt '国' `shouldEqual` Nothing
 
 isLetterTests:: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isLetterTests = describe "isLetter" do

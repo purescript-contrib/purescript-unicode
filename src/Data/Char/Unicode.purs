@@ -514,19 +514,23 @@ toTitle = fromCharCode <<< uTowtitle <<< toCharCode
 -- | >>> digitToInt '♥'
 -- | *** Exception: Char.digitToInt: not a digit '\9829'
 -- | ```
--- |
--- | TODO: This function.
--- |
--- digitToInt :: Char -> Int
--- digitToInt c
---   | (fromIntegral dec::Word) <= 9 = dec
---   | (fromIntegral hexl::Word) <= 5 = hexl + 10
---   | (fromIntegral hexu::Word) <= 5 = hexu + 10
---   | otherwise = errorWithoutStackTrace ("Char.digitToInt: not a digit " ++ show c) -- sigh
---   where
---     dec = ord c - ord '0'
---     hexl = ord c - ord 'a'
---     hexu = ord c - ord 'A'
+digitToInt :: Char -> Maybe Int
+digitToInt c = go c
+  where
+    go :: Char -> Maybe Int
+    go c | dec      <= 9 && dec      >= 0 = Just dec
+         | hexLower <= 5 && hexLower >= 0 = Just $ hexLower + 10
+         | hexUpper <= 5 && hexUpper >= 0 = Just $ hexUpper + 10
+         | otherwise                      = Nothing
+
+    dec :: Int
+    dec = toCharCode c - toCharCode '0'
+
+    hexLower :: Int
+    hexLower = toCharCode c - toCharCode 'a'
+
+    hexUpper :: Int
+    hexUpper = toCharCode c - toCharCode 'A'
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- | title-case letters, plus letters of caseless scripts and
