@@ -7,10 +7,20 @@ Unicode character functions.
 
 ## Installation
 
-```
-bower install purescript-unicode
+```sh
+$ bower install purescript-unicode
 ```
 
 ## Module documentation
 
 - [Data.Char.Unicode](docs/Data/Char/Unicode.md)
+
+## Generate Internal module
+
+The [Data.Char.Unicode.Internal](src/Data/Char/Unicode/Internal.purs) module
+can be generated with the following command:
+
+```sh
+$ wget 'http://www.unicode.org/Public/6.0.0/ucd/UnicodeData.txt'
+$ ./ubconfc < UnicodeData.txt > src/Data/Char/Unicode/Internal.purs
+```
