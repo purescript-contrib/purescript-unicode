@@ -30,10 +30,10 @@ cat <<EOF
 
 module Data.Char.Unicode.Internal where
 
-import Prelude
+import Prelude (class Show, map, (+), (<), (==), negate, otherwise, (>), (&&), (>=), show, (<>))
 
-import Data.Foldable
-import Data.Maybe
+import Data.Foldable (elem, find)
+import Data.Maybe (Maybe(Just, Nothing))
 
 -- Unicode general categories, listed in the same order as in the Unicode
 -- standard. This must be the same order as in GHC.Unicode.
