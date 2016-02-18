@@ -1,11 +1,11 @@
 
 module Data.Char.Unicode where
 
-import Prelude
+import Prelude (class Bounded, class Ord, class Eq, class Show, (-), otherwise, (+), ($), (>=), (&&), (<=), (<<<), (||), (==), (<), map, compare)
 
 import Data.Char (fromCharCode, toCharCode)
-import Data.Char.Unicode.Internal
-import Data.Maybe
+import Data.Char.Unicode.Internal (UnicodeCategory(NUMCAT_CN, NUMCAT_CO, NUMCAT_CS, NUMCAT_CF, NUMCAT_CC, NUMCAT_ZP, NUMCAT_ZL, NUMCAT_ZS, NUMCAT_SO, NUMCAT_SK, NUMCAT_SC, NUMCAT_SM, NUMCAT_PO, NUMCAT_PF, NUMCAT_PI, NUMCAT_PE, NUMCAT_PS, NUMCAT_PD, NUMCAT_PC, NUMCAT_NO, NUMCAT_NL, NUMCAT_ND, NUMCAT_ME, NUMCAT_MC, NUMCAT_MN, NUMCAT_LO, NUMCAT_LM, NUMCAT_LT, NUMCAT_LL, NUMCAT_LU), uTowtitle, uTowlower, uTowupper, uIswalnum, uIswalpha, uIswlower, uIswupper, uIswspace, uIswprint, uIswcntrl, uGencat)
+import Data.Maybe (Maybe(Just, Nothing))
 
 -- | Unicode General Categories (column 2 of the UnicodeData table) in
 -- | the order they are listed in the Unicode standard (the Unicode
@@ -736,4 +736,3 @@ isSeparator c =
         Just LineSeparator           -> true
         Just ParagraphSeparator      -> true
         _                            -> false
-
