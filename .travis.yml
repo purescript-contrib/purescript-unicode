@@ -11,4 +11,7 @@ install:
   - chmod a+x $HOME/purescript
   - npm install
 script:
-  - npm run build
+  - pulp build
+  - pulp test
+  - rimraf docs
+  - pulp docs
