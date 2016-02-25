@@ -2,6 +2,7 @@
 
 [![Latest release](http://img.shields.io/bower/v/purescript-unicode.svg)](https://github.com/purescript-contrib/purescript-unicode/releases)
 [![Build Status](https://travis-ci.org/purescript-contrib/purescript-unicode.svg?branch=master)](https://travis-ci.org/purescript-contrib/purescript-unicode)
+[![Maintainer: cdepillabout](https://img.shields.io/badge/maintainer-cdepillabout-lightgrey.svg)](http://github.com/cdepillabout)
 
 Unicode character functions.
 
