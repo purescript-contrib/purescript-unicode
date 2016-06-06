@@ -16,7 +16,7 @@ install:
   - bower --version
   - bower install
 script:
-  - travis_wait pulp build
+  - travis_wait 30 pulp build
   - pulp test
   - rimraf docs
   - pulp docs
