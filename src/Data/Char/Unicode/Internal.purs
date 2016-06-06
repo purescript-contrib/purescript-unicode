@@ -6,10 +6,10 @@
 
 module Data.Char.Unicode.Internal where
 
-import Prelude (class Show, map, (+), (<), (==), negate, otherwise, (>), (&&), (>=), show, (<>))
+import Prelude
 
 import Data.Foldable (elem, find)
-import Data.Maybe (Maybe(Just, Nothing))
+import Data.Maybe (Maybe(..))
 
 -- Unicode general categories, listed in the same order as in the Unicode
 -- standard. This must be the same order as in GHC.Unicode.
@@ -4857,4 +4857,3 @@ uGencat :: Int -> Maybe UnicodeCategory
 uGencat char =
     let conversionRule = getRule allchars char numBlocks
     in map (\(ConversionRule rule) -> rule.unicodeCat) conversionRule
-
