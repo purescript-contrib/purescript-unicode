@@ -8,12 +8,34 @@ import Control.Monad.Eff.Exception (EXCEPTION())
 import Control.Monad.Eff.Random (RANDOM())
 import Data.Char (fromCharCode)
 import Data.Maybe (Maybe(..))
-import Test.QuickCheck.Arbitrary (Arbitrary)
+import Test.QuickCheck.Arbitrary (class Arbitrary)
 import Test.QuickCheck.Gen (Gen(), oneOf, chooseInt)
 import Test.Spec (Spec(), describe, it, prop)
 import Test.Spec.Assertions (shouldEqual)
 
-import Data.Char.Unicode
+import Data.Char.Unicode ( GeneralCategory(..)
+                         , digitToInt
+                         , generalCategory
+                         , isAlpha
+                         , isAlphaNum
+                         , isAscii
+                         , isAsciiLower
+                         , isAsciiUpper
+                         , isControl
+                         , isDigit
+                         , isHexDigit
+                         , isLatin1
+                         , isLetter
+                         , isLower
+                         , isMark
+                         , isNumber
+                         , isOctDigit
+                         , isPrint
+                         , isPunctuation
+                         , isSeparator
+                         , isSpace
+                         , isSymbol
+                         , isUpper )
 
 dataCharUnicodeTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 dataCharUnicodeTests = describe "module Data.Char.Unicode" do

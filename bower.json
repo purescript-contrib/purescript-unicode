@@ -25,6 +25,6 @@
   },
   "devDependencies": {
     "purescript-console": "^1.0.0",
-    "purescript-super-spec": "~0.7.3"
+    "purescript-super-spec": "~0.9.3"
   }
 }
