@@ -10,8 +10,13 @@ install:
   - tar -xvf $HOME/purescript.tar.gz -C $HOME/
   - chmod a+x $HOME/purescript
   - npm install
+  - export PATH="node_modules/.bin:$PATH"
+  - psc --version
+  - pulp --version
+  - bower --version
+  - bower install
 script:
-  - pulp build
+  - travis_wait pulp build
   - pulp test
   - rimraf docs
   - pulp docs
