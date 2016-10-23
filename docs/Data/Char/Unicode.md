@@ -390,10 +390,98 @@ letter, if any.  (Title case differs from upper case only for a small
 number of ligature letters.)
 Any other character is returned unchanged.
 
+#### `digitToInt`
+
+``` purescript
+digitToInt :: Char -> Maybe Int
+```
+
+Convert a single digit `Char` to the corresponding `Int`.  This
+function fails unless its argument satisfies `isHexDigit`, but
+recognises both upper- and lower-case hexadecimal digits (that
+is, `0..9, A..F, a..f`.
+
+*Examples*
+
+Characters `0` through `9` are converted properly to
+`0..9`:
+
+```
+>>> map digitToInt ['0'..'9']
+[0,1,2,3,4,5,6,7,8,9]
+```
+
+Both upper- and lower-case `A` through `F` are converted
+as well, to `10..15`.
+
+```
+>>> map digitToInt ['a'..'f']
+[10,11,12,13,14,15]
+>>> map digitToInt ['A'..'F']
+[10,11,12,13,14,15]
+```
+
+Anything else throws an exception:
+
+```
+>>> digitToInt 'G'
+*** Exception: Char.digitToInt: not a digit 'G'
+>>> digitToInt '♥'
+*** Exception: Char.digitToInt: not a digit '\9829'
+```
+
 #### `isLetter`
 
 ``` purescript
 isLetter :: Char -> Boolean
+```
+
+Selects alphabetic Unicode characters (lower-case, upper-case and
+title-case letters, plus letters of caseless scripts and
+modifiers letters). This function is equivalent to
+`Data.Char.isAlpha`.
+
+This function returns `True` if its argument has one of the
+following `GeneralCategory`s, or `False` otherwise:
+
+- `UppercaseLetter`
+- `LowercaseLetter`
+- `TitlecaseLetter`
+- `ModifierLetter`
+- `OtherLetter`
+
+These classes are defined in the
+[Unicode Character Database](http://www.unicode.org/reports/tr44/tr44-14.html#GC_Values_Table)
+part of the Unicode standard. The same document defines what is
+and is not a "Letter".
+
+*Examples*
+
+Basic usage:
+
+```
+>>> isLetter 'a'
+True
+>>> isLetter 'A'
+True
+>>> isLetter '0'
+False
+>>> isLetter '%'
+False
+>>> isLetter '♥'
+False
+>>> isLetter '\31'
+False
+```
+
+Ensure that 'isLetter' and 'isAlpha' are equivalent.
+
+```
+>>> let chars = [(chr 0)..]
+>>> let letters = map isLetter chars
+>>> let alphas = map isAlpha chars
+>>> letters == alphas
+True
 ```
 
 #### `isMark`
