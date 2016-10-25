@@ -3,14 +3,16 @@ module Test.Data.Char.Unicode (dataCharUnicodeTests) where
 
 import Prelude
 
+import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE())
 import Control.Monad.Eff.Exception (EXCEPTION())
 import Control.Monad.Eff.Random (RANDOM())
 import Data.Char (fromCharCode)
 import Data.Maybe (Maybe(..))
+import Test.QuickCheck (quickCheck)
 import Test.QuickCheck.Arbitrary (class Arbitrary)
 import Test.QuickCheck.Gen (Gen(), oneOf, chooseInt)
-import Test.Spec (Spec(), describe, it, prop)
+import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
 import Data.Char.Unicode ( GeneralCategory(..)
@@ -179,24 +181,24 @@ instance arbitrayNonAsciiHexDigit :: Arbitrary NonAsciiHexDigit where
 
 isAsciiTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isAsciiTests = describe "isAscii" do
-    prop "ascii chars are ascii" \(AsciiChar char) -> isAscii char
-    prop "non ascii chars are not ascii" \(NonAsciiChar char) -> not $ isAscii char
+    it "ascii chars are ascii" $ liftEff $ quickCheck \(AsciiChar char) -> isAscii char
+    it "non ascii chars are not ascii" $ liftEff $ quickCheck \(NonAsciiChar char) -> not $ isAscii char
 
 isLatin1Tests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isLatin1Tests = describe "isLatin1" do
-    prop "ascii chars are latin1" \(AsciiChar char) -> isLatin1 char
-    prop "latin1 chars are latin1" \(Latin1Char char) -> isLatin1 char
-    prop "non latin1 chars are not latin1" \(NonLatin1Char char) -> not $ isLatin1 char
+    it "ascii chars are latin1" $ liftEff $ quickCheck \(AsciiChar char) -> isLatin1 char
+    it "latin1 chars are latin1" $ liftEff $ quickCheck \(Latin1Char char) -> isLatin1 char
+    it "non latin1 chars are not latin1" $ liftEff $ quickCheck \(NonLatin1Char char) -> not $ isLatin1 char
 
 isAsciiLowerTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isAsciiLowerTests = describe "isAsciiLower" do
-    prop "lower ascii chars are lower ascii" \(AsciiLowerChar char) -> isAsciiLower char
-    prop "non lower ascii chars are not lower ascii" \(NonAsciiLowerChar char) -> not $ isAsciiLower char
+    it "lower ascii chars are lower ascii" $ liftEff $ quickCheck \(AsciiLowerChar char) -> isAsciiLower char
+    it "non lower ascii chars are not lower ascii" $ liftEff $ quickCheck \(NonAsciiLowerChar char) -> not $ isAsciiLower char
 
 isAsciiUpperTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isAsciiUpperTests = describe "isAsciiUpper" do
-    prop "upper ascii chars are upper ascii" \(AsciiUpperChar char) -> isAsciiUpper char
-    prop "non upper ascii chars are not upper ascii" \(NonAsciiUpperChar char) -> not $ isAsciiUpper char
+    it "upper ascii chars are upper ascii" $ liftEff $ quickCheck \(AsciiUpperChar char) -> isAsciiUpper char
+    it "non upper ascii chars are not upper ascii" $ liftEff $ quickCheck \(NonAsciiUpperChar char) -> not $ isAsciiUpper char
 
 isControlTests :: forall eff . Spec eff Unit
 isControlTests = describe "isControl" do
@@ -289,18 +291,18 @@ isAlphaNumTests = describe "isAlphaNum" do
 
 isDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isDigitTests = describe "isDigit" do
-    prop "digits are digits" \(AsciiDigit char) -> isDigit char
-    prop "non digits are not digits" \(NonAsciiDigit char) -> not $ isDigit char
+    it "digits are digits" $ liftEff $ quickCheck \(AsciiDigit char) -> isDigit char
+    it "non digits are not digits" $ liftEff $ quickCheck \(NonAsciiDigit char) -> not $ isDigit char
 
 isOctDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isOctDigitTests = describe "isOctDigit" do
-    prop "oct digits are oct digits" \(AsciiOctDigit char) -> isOctDigit char
-    prop "non oct digits are not oct digits" \(NonAsciiOctDigit char) -> not $ isOctDigit char
+    it "oct digits are oct digits" $ liftEff $ quickCheck \(AsciiOctDigit char) -> isOctDigit char
+    it "non oct digits are not oct digits" $ liftEff $ quickCheck \(NonAsciiOctDigit char) -> not $ isOctDigit char
 
 isHexDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isHexDigitTests = describe "isHexDigit" do
-    prop "hex digits are hex digits" \(AsciiHexDigit char) -> isHexDigit char
-    prop "non hex digits are not hex digits" \(NonAsciiHexDigit char) -> not $ isHexDigit char
+    it "hex digits are hex digits" $ liftEff $ quickCheck \(AsciiHexDigit char) -> isHexDigit char
+    it "non hex digits are not hex digits" $ liftEff $ quickCheck \(NonAsciiHexDigit char) -> not $ isHexDigit char
 
 isPunctuationTests :: forall eff . Spec eff Unit
 isPunctuationTests = describe "isPunctuation" do
@@ -364,7 +366,7 @@ digitToIntTests = describe "digitToInt" do
 
 isLetterTests:: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
 isLetterTests = describe "isLetter" do
-    prop "isLetter == isAlpha" \char -> isLetter char == isAlpha char
+    it "isLetter == isAlpha" $ liftEff $ quickCheck \char -> isLetter char == isAlpha char
 
 isMarkTests :: forall eff . Spec eff Unit
 isMarkTests = describe "isMark" do
@@ -396,7 +398,7 @@ isNumberTests = describe "isNumber" do
         isNumber '３' `shouldEqual` true
     it "'⑳' is Number" $
         isNumber '⑳' `shouldEqual` true
-    prop "0..9 are Number" \(AsciiDigit char) -> isNumber char
+    it "0..9 are Number" $ liftEff $ quickCheck \(AsciiDigit char) -> isNumber char
 
 isSeparatorTests :: forall eff . Spec eff Unit
 isSeparatorTests = describe "isSeparator" do
