@@ -527,13 +527,14 @@ toTitle = fromCharCode <<< uTowtitle <<< toCharCode
 -- | *** Exception: Char.digitToInt: not a digit '\9829'
 -- | ```
 digitToInt :: Char -> Maybe Int
-digitToInt c = go c
+digitToInt c = result
   where
-    go :: Char -> Maybe Int
-    go c | dec      <= 9 && dec      >= 0 = Just dec
-         | hexLower <= 5 && hexLower >= 0 = Just $ hexLower + 10
-         | hexUpper <= 5 && hexUpper >= 0 = Just $ hexUpper + 10
-         | otherwise                      = Nothing
+    result :: Maybe Int
+    result
+      | dec      <= 9 && dec      >= 0 = Just dec
+      | hexLower <= 5 && hexLower >= 0 = Just $ hexLower + 10
+      | hexUpper <= 5 && hexUpper >= 0 = Just $ hexUpper + 10
+      | otherwise                      = Nothing
 
     dec :: Int
     dec = toCharCode c - toCharCode '0'
