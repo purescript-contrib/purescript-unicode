@@ -493,38 +493,24 @@ toLower = fromCharCode <<< uTowlower <<< toCharCode
 toTitle :: Char -> Char
 toTitle = fromCharCode <<< uTowtitle <<< toCharCode
 
--- | Convert a single digit `Char` to the corresponding `Int`.  This
--- | function fails unless its argument satisfies `isHexDigit`, but
--- | recognises both upper- and lower-case hexadecimal digits (that
--- | is, `0..9, A..F, a..f`.
--- |
--- | *Examples*
--- |
--- | Characters `0` through `9` are converted properly to
--- | `0..9`:
--- |
+-- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
+-- | satisfies `isHexDigit`, if it is one of `0..9, A..F, a..f`. Anything else
+-- | converts to `Nothing`
+-- | 
 -- | ```
--- | >>> map digitToInt ['0'..'9']
--- | [0,1,2,3,4,5,6,7,8,9]
--- | ```
--- |
--- | Both upper- and lower-case `A` through `F` are converted
--- | as well, to `10..15`.
--- |
--- | ```
--- | >>> map digitToInt ['a'..'f']
--- | [10,11,12,13,14,15]
--- | >>> map digitToInt ['A'..'F']
--- | [10,11,12,13,14,15]
--- | ```
--- |
--- | Anything else throws an exception:
--- |
--- | ```
+-- | >>> import Data.Traversable
+-- | 
+-- | >>> traverse digitToInt ['0','1','2','3','4','5','6','7','8','9']
+-- | (Just [0,1,2,3,4,5,6,7,8,9])
+-- | 
+-- | >>> traverse digitToInt ['a','b','c','d','e','f']
+-- | (Just [10,11,12,13,14,15])
+-- | 
+-- | >>> traverse digitToInt ['A','B','C','D','E','F']
+-- | (Just [10,11,12,13,14,15])
+-- | 
 -- | >>> digitToInt 'G'
--- | *** Exception: Char.digitToInt: not a digit 'G'
--- | >>> digitToInt '♥'
--- | *** Exception: Char.digitToInt: not a digit '\9829'
+-- | Nothing
 -- | ```
 digitToInt :: Char -> Maybe Int
 digitToInt c = result

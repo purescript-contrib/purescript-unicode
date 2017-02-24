@@ -396,8 +396,9 @@ Any other character is returned unchanged.
 digitToInt :: Char -> Maybe Int
 ```
 
-Convert a single digit `Char` to the corresponding `Just Int` if its argument satisfies `isHexDigit`, if it is one of `0..9, A..F, a..f`. Anything else converts to `Nothing`
-
+Convert a single digit `Char` to the corresponding `Just Int` if its argument
+satisfies `isHexDigit`, if it is one of `0..9, A..F, a..f`. Anything else
+converts to `Nothing`
 
 ```
 >>> import Data.Traversable
