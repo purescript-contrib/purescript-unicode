@@ -19,9 +19,9 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-maybe": "^2.0.0",
-    "purescript-foldable-traversable": "^2.0.0",
-    "purescript-strings": "^2.0.0"
+    "purescript-maybe": "^3.0.0",
+    "purescript-foldable-traversable": "^3.0.0",
+    "purescript-strings": "^3.0.0"
   },
   "devDependencies": {
     "purescript-console": "^2.0.0",
