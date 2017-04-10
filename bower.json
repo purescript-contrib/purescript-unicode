@@ -24,9 +24,9 @@
     "purescript-strings": "^3.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^2.0.0",
-    "purescript-spec": "^0.10.0",
-    "purescript-random": "^2.0.0",
-    "purescript-quickcheck": "^3.0.0"
+    "purescript-console": "^3.0.0",
+    "purescript-spec": "^0.13.0",
+    "purescript-random": "^3.0.0",
+    "purescript-quickcheck": "^4.0.0"
   }
 }
