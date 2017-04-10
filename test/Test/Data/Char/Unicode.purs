@@ -9,6 +9,7 @@ import Control.Monad.Eff.Exception (EXCEPTION())
 import Control.Monad.Eff.Random (RANDOM())
 import Data.Char (fromCharCode)
 import Data.Maybe (Maybe(..))
+import Data.NonEmpty ((:|))
 import Test.QuickCheck (quickCheck)
 import Test.QuickCheck.Arbitrary (class Arbitrary)
 import Test.QuickCheck.Gen (Gen(), oneOf, chooseInt)
@@ -39,7 +40,7 @@ import Data.Char.Unicode ( GeneralCategory(..)
                          , isSymbol
                          , isUpper )
 
-dataCharUnicodeTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+dataCharUnicodeTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 dataCharUnicodeTests = describe "module Data.Char.Unicode" do
     generalCategoryDataTypeTests
     generalCategoryTests
@@ -127,7 +128,7 @@ instance arbitrayAsciiLowerChar :: Arbitrary AsciiLowerChar where
 
 newtype NonAsciiLowerChar = NonAsciiLowerChar Char
 instance arbitrayNonAsciiLowerChar :: Arbitrary NonAsciiLowerChar where
-    arbitrary = NonAsciiLowerChar <<< fromCharCode <$> oneOf g [g , chooseInt 0x7B 0xFFFF]
+    arbitrary = NonAsciiLowerChar <<< fromCharCode <$> oneOf (g :| [g , chooseInt 0x7B 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x60
@@ -138,7 +139,7 @@ instance arbitrayAsciiUpperChar :: Arbitrary AsciiUpperChar where
 
 newtype NonAsciiUpperChar = NonAsciiUpperChar Char
 instance arbitrayNonAsciiUpperChar :: Arbitrary NonAsciiUpperChar where
-    arbitrary = NonAsciiUpperChar <<< fromCharCode <$> oneOf g [g , chooseInt 0x5B 0xFFFF]
+    arbitrary = NonAsciiUpperChar <<< fromCharCode <$> oneOf (g :| [g , chooseInt 0x5B 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x40
@@ -149,7 +150,7 @@ instance arbitrayAsciiDigit :: Arbitrary AsciiDigit where
 
 newtype NonAsciiDigit = NonAsciiDigit Char
 instance arbitrayNonAsciiDigit :: Arbitrary NonAsciiDigit where
-    arbitrary = NonAsciiDigit <<< fromCharCode <$> oneOf g [g , chooseInt 0x3A 0xFFFF]
+    arbitrary = NonAsciiDigit <<< fromCharCode <$> oneOf (g :| [g , chooseInt 0x3A 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
@@ -160,42 +161,42 @@ instance arbitrayAsciiOctDigit :: Arbitrary AsciiOctDigit where
 
 newtype NonAsciiOctDigit = NonAsciiOctDigit Char
 instance arbitrayNonAsciiOctDigit :: Arbitrary NonAsciiOctDigit where
-    arbitrary = NonAsciiOctDigit <<< fromCharCode <$> oneOf g [g , chooseInt 0x38 0xFFFF]
+    arbitrary = NonAsciiOctDigit <<< fromCharCode <$> oneOf (g :| [g , chooseInt 0x38 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
 
 newtype AsciiHexDigit = AsciiHexDigit Char
 instance arbitrayAsciiHexDigit :: Arbitrary AsciiHexDigit where
-    arbitrary = AsciiHexDigit <<< fromCharCode <$> oneOf g [g, chooseInt 0x41 0x46, chooseInt 0x61 0x66]
+    arbitrary = AsciiHexDigit <<< fromCharCode <$> oneOf (g :| [g, chooseInt 0x41 0x46, chooseInt 0x61 0x66])
       where
         g :: Gen Int
         g = chooseInt 0x30 0x37
 
 newtype NonAsciiHexDigit = NonAsciiHexDigit Char
 instance arbitrayNonAsciiHexDigit :: Arbitrary NonAsciiHexDigit where
-    arbitrary = NonAsciiHexDigit <<< fromCharCode <$> oneOf g [g, chooseInt 0x3A 0x40, chooseInt 0x4A 0x60, chooseInt 0x67 0xFFFF]
+    arbitrary = NonAsciiHexDigit <<< fromCharCode <$> oneOf (g :| [g, chooseInt 0x3A 0x40, chooseInt 0x4A 0x60, chooseInt 0x67 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
 
-isAsciiTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isAsciiTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isAsciiTests = describe "isAscii" do
     it "ascii chars are ascii" $ liftEff $ quickCheck \(AsciiChar char) -> isAscii char
     it "non ascii chars are not ascii" $ liftEff $ quickCheck \(NonAsciiChar char) -> not $ isAscii char
 
-isLatin1Tests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isLatin1Tests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isLatin1Tests = describe "isLatin1" do
     it "ascii chars are latin1" $ liftEff $ quickCheck \(AsciiChar char) -> isLatin1 char
     it "latin1 chars are latin1" $ liftEff $ quickCheck \(Latin1Char char) -> isLatin1 char
     it "non latin1 chars are not latin1" $ liftEff $ quickCheck \(NonLatin1Char char) -> not $ isLatin1 char
 
-isAsciiLowerTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isAsciiLowerTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isAsciiLowerTests = describe "isAsciiLower" do
     it "lower ascii chars are lower ascii" $ liftEff $ quickCheck \(AsciiLowerChar char) -> isAsciiLower char
     it "non lower ascii chars are not lower ascii" $ liftEff $ quickCheck \(NonAsciiLowerChar char) -> not $ isAsciiLower char
 
-isAsciiUpperTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isAsciiUpperTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isAsciiUpperTests = describe "isAsciiUpper" do
     it "upper ascii chars are upper ascii" $ liftEff $ quickCheck \(AsciiUpperChar char) -> isAsciiUpper char
     it "non upper ascii chars are not upper ascii" $ liftEff $ quickCheck \(NonAsciiUpperChar char) -> not $ isAsciiUpper char
@@ -289,17 +290,17 @@ isAlphaNumTests = describe "isAlphaNum" do
     it "'\\n' is not AlphaNum" $
         isAlphaNum '\n' `shouldEqual` false
 
-isDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isDigitTests = describe "isDigit" do
     it "digits are digits" $ liftEff $ quickCheck \(AsciiDigit char) -> isDigit char
     it "non digits are not digits" $ liftEff $ quickCheck \(NonAsciiDigit char) -> not $ isDigit char
 
-isOctDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isOctDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isOctDigitTests = describe "isOctDigit" do
     it "oct digits are oct digits" $ liftEff $ quickCheck \(AsciiOctDigit char) -> isOctDigit char
     it "non oct digits are not oct digits" $ liftEff $ quickCheck \(NonAsciiOctDigit char) -> not $ isOctDigit char
 
-isHexDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isHexDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isHexDigitTests = describe "isHexDigit" do
     it "hex digits are hex digits" $ liftEff $ quickCheck \(AsciiHexDigit char) -> isHexDigit char
     it "non hex digits are not hex digits" $ liftEff $ quickCheck \(NonAsciiHexDigit char) -> not $ isHexDigit char
@@ -364,7 +365,7 @@ digitToIntTests = describe "digitToInt" do
     it "'国' is not a digit" $
         digitToInt '国' `shouldEqual` Nothing
 
-isLetterTests:: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isLetterTests:: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isLetterTests = describe "isLetter" do
     it "isLetter == isAlpha" $ liftEff $ quickCheck \char -> isLetter char == isAlpha char
 
@@ -380,7 +381,7 @@ isMarkTests = describe "isMark" do
     it "'♥' is not Mark" $
         isMark '♥' `shouldEqual` false
 
-isNumberTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, err :: EXCEPTION | eff) Unit
+isNumberTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isNumberTests = describe "isNumber" do
     it "'a' is not Number" $
         isNumber 'a' `shouldEqual` false
