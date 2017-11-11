@@ -32,8 +32,10 @@ module Data.Char.Unicode.Internal where
 
 import Prelude
 
-import Data.Foldable (elem, find)
-import Data.Maybe (Maybe(..))
+import Data.Array as Array
+import Data.Int (floor, toNumber)
+import Data.Maybe (Maybe(..), isJust)
+import Partial.Unsafe (unsafePartial)
 
 -- Unicode general categories, listed in the same order as in the Unicode
 -- standard. This must be the same order as in GHC.Unicode.
@@ -327,11 +329,11 @@ cat <<EOF
 nullrule :: ConversionRule
 nullrule = ConversionRule { category: gencatLU, unicodeCat: NUMCAT_CN, possible: 0, updist: 0, lowdist: 0, titledist: 0 }
 
-blkCmp :: CharBlock -> CharBlock -> Int
+blkCmp :: CharBlock -> CharBlock -> Ordering
 blkCmp (CharBlock key) (CharBlock cur)
-    | key.start >= cur.start && key.start < (cur.start + cur.length) =  0
-    | key.start > cur.start                                          =  1
-    | otherwise                                                      = -1
+    | key.start >= cur.start && key.start < (cur.start + cur.length) = EQ
+    | key.start > cur.start                                          = GT
+    | otherwise                                                      = LT
 
 
 -- TODO: This might be better if it returned Nothing instead of the nullrule.
@@ -344,14 +346,19 @@ getRule blocks unichar size =
         Nothing -> Nothing
         Just (CharBlock charBlock) -> Just charBlock.convRule
 
--- TODO: This isn't actually a binary search...
---
 -- The third argument is a  size.  It says to only look at this many elements
 -- in the array.  There are times when we don't want to look at ALL the
 -- elements, but only a subset.
-bsearch :: forall a . a -> Array a -> Int -> (a -> a -> Int) -> Maybe a
-bsearch a array _ compare = find (\testA -> compare a testA == 0) array
-
+bsearch :: forall a . a -> Array a -> Int -> (a -> a -> Ordering) -> Maybe a
+bsearch a array size compare = go 0 size
+    where
+    go i k | i > k = Nothing
+           | otherwise = let j = floor (toNumber (i + k) / 2.0)
+                             b = unsafePartial (Array.unsafeIndex array j)
+                         in case compare a b of
+                              EQ -> Just b
+                              GT -> go (j + 1) k
+                              _  -> go i (j - 1)
 
 -- Check whether a character (internal code) has certain attributes.
 -- Attributes (category flags) may be ORed. The function ANDs
@@ -364,14 +371,14 @@ checkAttr categories char =
         maybeConversionRule = getRule allchars char numOfBlocks
     in case maybeConversionRule of
             Nothing -> false
-            Just (ConversionRule rule) -> elem rule.category categories
+            Just (ConversionRule rule) -> isJust (Array.elemIndex rule.category categories)
 
 checkAttrS :: Array Int -> Int -> Boolean
 checkAttrS categories char =
     let maybeConversionRule = getRule spacechars char numSpaceBlocks
     in case maybeConversionRule of
             Nothing -> false
-            Just (ConversionRule rule) -> elem rule.category categories
+            Just (ConversionRule rule) -> isJust (Array.elemIndex rule.category categories)
 
 uIswcntrl :: Int -> Boolean
 uIswcntrl = checkAttr [ gencatCC ]
