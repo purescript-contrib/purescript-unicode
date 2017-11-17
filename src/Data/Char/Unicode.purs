@@ -3,7 +3,8 @@ module Data.Char.Unicode where
 
 import Prelude
 
-import Data.Char (fromCharCode, toCharCode)
+import Data.Char (toCharCode)
+import Data.String.CodePoints (CodePoint, codePointToInt, codePointFromInt)
 import Data.Char.Unicode.Internal ( UnicodeCategory(..)
                                   , uTowtitle
                                   , uTowlower
@@ -17,7 +18,15 @@ import Data.Char.Unicode.Internal ( UnicodeCategory(..)
                                   , uIswcntrl
                                   , uGencat
                                   )
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromJust)
+import Partial.Unsafe (unsafePartial)
+
+-- Helpers; should be safe considering this is the Unicode module
+charPoint :: Char -> CodePoint
+charPoint = unsafePartial fromJust <<< codePointFromInt <<< toCharCode
+
+modify :: (Int -> Int) -> (CodePoint -> CodePoint)
+modify f c = unsafePartial fromJust (codePointFromInt (f (codePointToInt c)))
 
 -- | Unicode General Categories (column 2 of the UnicodeData table) in
 -- | the order they are listed in the Unicode standard (the Unicode
@@ -292,93 +301,93 @@ instance boundedGeneralCategory :: Bounded GeneralCategory where
 -- | >>> generalCategory ' '
 -- | Just Space
 -- | ```
-generalCategory :: Char -> Maybe GeneralCategory
-generalCategory = map unicodeCatToGeneralCat <<< uGencat <<< toCharCode
+generalCategory :: CodePoint -> Maybe GeneralCategory
+generalCategory = map unicodeCatToGeneralCat <<< uGencat <<< codePointToInt
 
 -- | Selects the first 128 characters of the Unicode character set,
 -- | corresponding to the ASCII character set.
-isAscii :: Char -> Boolean
-isAscii c =  c <  '\x80'
+isAscii :: CodePoint -> Boolean
+isAscii c = c < charPoint '\x80'
 
 -- | Selects the first 256 characters of the Unicode character set,
 -- | corresponding to the ISO 8859-1 (Latin-1) character set.
-isLatin1 :: Char -> Boolean
-isLatin1 c =  c <= '\xff'
+isLatin1 :: CodePoint -> Boolean
+isLatin1 c = c <= charPoint '\xff'
 
 -- | Selects ASCII lower-case letters,
 -- | i.e. characters satisfying both `isAscii` and `isLower`.
-isAsciiLower :: Char -> Boolean
-isAsciiLower c =  c >= 'a' && c <= 'z'
+isAsciiLower :: CodePoint -> Boolean
+isAsciiLower c = c >= charPoint 'a' && c <= charPoint 'z'
 
 -- | Selects ASCII upper-case letters,
 -- | i.e. characters satisfying both `isAscii` and `isUpper`.
-isAsciiUpper :: Char -> Boolean
-isAsciiUpper c =  c >= 'A' && c <= 'Z'
+isAsciiUpper :: CodePoint -> Boolean
+isAsciiUpper c = c >= charPoint 'A' && c <= charPoint 'Z'
 
 -- | Selects control characters, which are the non-printing characters of
 -- | the Latin-1 subset of Unicode.
-isControl :: Char -> Boolean
-isControl = uIswcntrl <<< toCharCode
+isControl :: CodePoint -> Boolean
+isControl = uIswcntrl <<< codePointToInt
 
 -- | Selects printable Unicode characters
 -- | (letters, numbers, marks, punctuation, symbols and spaces).
-isPrint :: Char -> Boolean
-isPrint = uIswprint <<< toCharCode
+isPrint :: CodePoint -> Boolean
+isPrint = uIswprint <<< codePointToInt
 
 -- | Returns `True` for any Unicode space character, and the control
 -- | characters `\t`, `\n`, `\r`, `\f`, `\v`.
 -- |
 -- | `isSpace` includes non-breaking space.
-isSpace :: Char -> Boolean
+isSpace :: CodePoint -> Boolean
 -- The magic 0x377 used in the code below isn't really that magical. As of
 -- 2014, all the codepoints at or below 0x377 have been assigned, so we
 -- shouldn't have to worry about any new spaces appearing below there.
 isSpace c = if uc <= 0x337
                then uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
-               else uIswspace $ toCharCode c
+               else uIswspace uc
   where
     uc :: Int
-    uc = toCharCode c
+    uc = codePointToInt c
 
 -- | Selects upper-case or title-case alphabetic Unicode characters (letters).
 -- | Title case is used by a small number of letter ligatures like the
 -- | single-character form of /Lj/.
-isUpper :: Char -> Boolean
-isUpper = uIswupper <<< toCharCode
+isUpper :: CodePoint -> Boolean
+isUpper = uIswupper <<< codePointToInt
 
 -- | Selects lower-case alphabetic Unicode characters (letters).
-isLower :: Char -> Boolean
-isLower = uIswlower <<< toCharCode
+isLower :: CodePoint -> Boolean
+isLower = uIswlower <<< codePointToInt
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- | title-case letters, plus letters of caseless scripts and modifiers letters).
-isAlpha :: Char -> Boolean
-isAlpha = uIswalpha <<< toCharCode
+isAlpha :: CodePoint -> Boolean
+isAlpha = uIswalpha <<< codePointToInt
 
 -- | Selects alphabetic or numeric digit Unicode characters.
 -- |
 -- | Note that numeric digits outside the ASCII range are selected by this
 -- | function but not by `isDigit`.  Such digits may be part of identifiers
 -- | but are not used by the printer and reader to represent numbers.
-isAlphaNum :: Char -> Boolean
-isAlphaNum = uIswalnum <<< toCharCode
+isAlphaNum :: CodePoint -> Boolean
+isAlphaNum = uIswalnum <<< codePointToInt
 
 -- | Selects ASCII digits, i.e. `0..9`.
-isDigit :: Char -> Boolean
-isDigit c = let diff = (toCharCode c - toCharCode '0')
+isDigit :: CodePoint -> Boolean
+isDigit c = let diff = (codePointToInt c - toCharCode '0')
             in diff <= 9 && diff >= 0
 
 -- | Selects ASCII octal digits, i.e. `0..7`.
-isOctDigit :: Char -> Boolean
-isOctDigit c = let diff = (toCharCode c - toCharCode '0')
+isOctDigit :: CodePoint -> Boolean
+isOctDigit c = let diff = (codePointToInt c - toCharCode '0')
                in diff <= 7 && diff >= 0
 
 -- | Selects ASCII hexadecimal digits,
 -- | i.e. `0..9, A..F, a..f`.
-isHexDigit :: Char -> Boolean
+isHexDigit :: CodePoint -> Boolean
 isHexDigit c = isDigit c
-            || (let diff = (toCharCode c - toCharCode 'A') in diff <= 5 && diff >= 0)
-            || (let diff = (toCharCode c - toCharCode 'a') in diff <= 5 && diff >= 0)
+            || (let diff = (codePointToInt c - toCharCode 'A') in diff <= 5 && diff >= 0)
+            || (let diff = (codePointToInt c - toCharCode 'a') in diff <= 5 && diff >= 0)
 
 -- | Selects Unicode punctuation characters, including various kinds
 -- | of connectors, brackets and quotes.
@@ -417,7 +426,7 @@ isHexDigit c = isDigit c
 -- | >>> isPunctuation '—'
 -- | true
 -- | ```
-isPunctuation :: Char -> Boolean
+isPunctuation :: CodePoint -> Boolean
 isPunctuation c =
     case generalCategory c of
         Just ConnectorPunctuation    -> true
@@ -467,7 +476,7 @@ isPunctuation c =
 -- | >>> isSymbol '-'
 -- | false
 -- | ```
-isSymbol :: Char -> Boolean
+isSymbol :: CodePoint -> Boolean
 isSymbol c =
     case generalCategory c of
         Just MathSymbol              -> true
@@ -478,41 +487,43 @@ isSymbol c =
 
 -- | Convert a letter to the corresponding upper-case letter, if any.
 -- | Any other character is returned unchanged.
-toUpper :: Char -> Char
-toUpper = fromCharCode <<< uTowupper <<< toCharCode
+toUpper :: CodePoint -> CodePoint
+toUpper = modify uTowupper
 
 -- | Convert a letter to the corresponding lower-case letter, if any.
 -- | Any other character is returned unchanged.
-toLower :: Char -> Char
-toLower = fromCharCode <<< uTowlower <<< toCharCode
+toLower :: CodePoint -> CodePoint
+toLower = modify uTowlower
 
 -- | Convert a letter to the corresponding title-case or upper-case
 -- | letter, if any.  (Title case differs from upper case only for a small
 -- | number of ligature letters.)
 -- | Any other character is returned unchanged.
-toTitle :: Char -> Char
-toTitle = fromCharCode <<< uTowtitle <<< toCharCode
+toTitle :: CodePoint -> CodePoint
+toTitle = modify uTowtitle
 
--- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
+-- | Convert a single digit `CodePoint` to the corresponding `Just Int` if its argument
 -- | satisfies `isHexDigit`, if it is one of `0..9, A..F, a..f`. Anything else
 -- | converts to `Nothing`
--- | 
+-- |
+-- | Fixme: example should be updated to use CodePoints
+-- |
 -- | ```
 -- | >>> import Data.Traversable
--- | 
+-- |
 -- | >>> traverse digitToInt ['0','1','2','3','4','5','6','7','8','9']
 -- | (Just [0,1,2,3,4,5,6,7,8,9])
--- | 
+-- |
 -- | >>> traverse digitToInt ['a','b','c','d','e','f']
 -- | (Just [10,11,12,13,14,15])
--- | 
+-- |
 -- | >>> traverse digitToInt ['A','B','C','D','E','F']
 -- | (Just [10,11,12,13,14,15])
--- | 
+-- |
 -- | >>> digitToInt 'G'
 -- | Nothing
 -- | ```
-digitToInt :: Char -> Maybe Int
+digitToInt :: CodePoint -> Maybe Int
 digitToInt c = result
   where
     result :: Maybe Int
@@ -523,13 +534,13 @@ digitToInt c = result
       | otherwise                      = Nothing
 
     dec :: Int
-    dec = toCharCode c - toCharCode '0'
+    dec = codePointToInt c - toCharCode '0'
 
     hexLower :: Int
-    hexLower = toCharCode c - toCharCode 'a'
+    hexLower = codePointToInt c - toCharCode 'a'
 
     hexUpper :: Int
-    hexUpper = toCharCode c - toCharCode 'A'
+    hexUpper = codePointToInt c - toCharCode 'A'
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- | title-case letters, plus letters of caseless scripts and
@@ -578,7 +589,7 @@ digitToInt c = result
 -- | >>> letters == alphas
 -- | True
 -- | ```
-isLetter :: Char -> Boolean
+isLetter :: CodePoint -> Boolean
 isLetter c =
     case generalCategory c of
         Just UppercaseLetter         -> true
@@ -628,7 +639,7 @@ isLetter c =
 -- | >>> isMark '✓'
 -- | false
 -- | ```
-isMark :: Char -> Boolean
+isMark :: CodePoint -> Boolean
 isMark c =
     case generalCategory c of
         Just NonSpacingMark          -> true
@@ -677,7 +688,7 @@ isMark c =
 -- | >>> isNumber 'Ⅸ'
 -- | true
 -- | ```
-isNumber :: Char -> Boolean
+isNumber :: CodePoint -> Boolean
 isNumber c =
     case generalCategory c of
         Just DecimalNumber           -> true
@@ -728,7 +739,7 @@ isNumber c =
 -- | >>> isSeparator '\160'
 -- | true
 -- | ```
-isSeparator :: Char -> Boolean
+isSeparator :: CodePoint -> Boolean
 isSeparator c =
     case generalCategory c of
         Just Space                   -> true

@@ -7,9 +7,11 @@ import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE())
 import Control.Monad.Eff.Exception (EXCEPTION())
 import Control.Monad.Eff.Random (RANDOM())
-import Data.Char (fromCharCode)
-import Data.Maybe (Maybe(..))
+import Data.Char (toCharCode)
+import Data.Maybe (Maybe(..), fromJust)
 import Data.NonEmpty ((:|))
+import Data.String.CodePoints (CodePoint, codePointFromInt)
+import Partial.Unsafe (unsafePartial)
 import Test.QuickCheck (quickCheck)
 import Test.QuickCheck.Arbitrary (class Arbitrary)
 import Test.QuickCheck.Gen (Gen(), oneOf, chooseInt)
@@ -40,8 +42,14 @@ import Data.Char.Unicode ( GeneralCategory(..)
                          , isSymbol
                          , isUpper )
 
+unsafeCodePoint :: Int -> CodePoint
+unsafeCodePoint = unsafePartial fromJust <<< codePointFromInt
+
+charPoint :: Char -> CodePoint
+charPoint = unsafePartial fromJust <<< codePointFromInt <<< toCharCode
+
 dataCharUnicodeTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
-dataCharUnicodeTests = describe "module Data.Char.Unicode" do
+dataCharUnicodeTests = describe "module Data.CodePoint.Unicode" do
     generalCategoryDataTypeTests
     generalCategoryTests
     isAsciiTests
@@ -89,93 +97,97 @@ generalCategoryDataTypeTests = describe "GeneralCategory instances" do
 
 generalCategoryTests :: forall eff . Spec eff Unit
 generalCategoryTests = describe "generalCategory" do
-    it "generalCategory 'a' == LowercaseLetter" $
-        generalCategory 'a' `shouldEqual` Just LowercaseLetter
-    it "generalCategory 'A' == UppercaseLetter" $
-        generalCategory 'A' `shouldEqual` Just UppercaseLetter
-    it "generalCategory '0' == DecimalNumber" $
-        generalCategory '0' `shouldEqual` Just DecimalNumber
-    it "generalCategory '%' == OtherPunctuation" $
-        generalCategory '%' `shouldEqual` Just OtherPunctuation
-    it "generalCategory '♥' == OtherSymbol" $
-        generalCategory '♥' `shouldEqual` Just OtherSymbol
-    it "generalCategory '\\31' == Control" $
-        generalCategory '\31' `shouldEqual` Just Control
-    it "generalCategory ' ' == Space" $
-        generalCategory ' ' `shouldEqual` Just Space
-    it "generalCategory '本' == OtherLetter" $
-        generalCategory '本' `shouldEqual` Just OtherLetter
+    it "generalCategory (charPoint 'a') == LowercaseLetter" $
+        generalCategory (charPoint 'a') `shouldEqual` Just LowercaseLetter
+    it "generalCategory (charPoint 'A') == UppercaseLetter" $
+        generalCategory (charPoint 'A') `shouldEqual` Just UppercaseLetter
+    it "generalCategory (charPoint '0') == DecimalNumber" $
+        generalCategory (charPoint '0') `shouldEqual` Just DecimalNumber
+    it "generalCategory (charPoint '%') == OtherPunctuation" $
+        generalCategory (charPoint '%') `shouldEqual` Just OtherPunctuation
+    it "generalCategory (charPoint '♥') == OtherSymbol" $
+        generalCategory (charPoint '♥') `shouldEqual` Just OtherSymbol
+    it "generalCategory (charPoint '\\31') == Control" $
+        generalCategory (charPoint '\31') `shouldEqual` Just Control
+    it "generalCategory (charPoint ' ') == Space" $
+        generalCategory (charPoint ' ') `shouldEqual` Just Space
+    it "generalCategory (charPoint '本') == OtherLetter" $
+        generalCategory (charPoint '本') `shouldEqual` Just OtherLetter
 
-newtype AsciiChar = AsciiChar Char
-instance arbitrayAsciiChar :: Arbitrary AsciiChar where
-    arbitrary = AsciiChar <<< fromCharCode <$> chooseInt 0 0x7F
+newtype CP = CP CodePoint
+instance arbitraryCP :: Arbitrary CP where
+    arbitrary = CP <<< unsafeCodePoint <$> chooseInt 0 0x10FFFF
 
-newtype NonAsciiChar = NonAsciiChar Char
-instance arbitrayNonAsciiChar :: Arbitrary NonAsciiChar where
-    arbitrary = NonAsciiChar <<< fromCharCode <$> chooseInt 0x80 0xFFFF
+newtype AsciiChar = AsciiChar CodePoint
+instance arbitraryAsciiChar :: Arbitrary AsciiChar where
+    arbitrary = AsciiChar <<< unsafeCodePoint <$> chooseInt 0 0x7F
 
-newtype Latin1Char = Latin1Char Char
-instance arbitrayLatin1Char :: Arbitrary Latin1Char where
-    arbitrary = Latin1Char <<< fromCharCode <$> chooseInt 0x80 0xFF
+newtype NonAsciiChar = NonAsciiChar CodePoint
+instance arbitraryNonAsciiChar :: Arbitrary NonAsciiChar where
+    arbitrary = NonAsciiChar <<< unsafeCodePoint <$> chooseInt 0x80 0xFFFF
 
-newtype NonLatin1Char = NonLatin1Char Char
-instance arbitrayNonLatin1Char :: Arbitrary NonLatin1Char where
-    arbitrary = NonLatin1Char <<< fromCharCode <$> chooseInt 0x100 0xFFFF
+newtype Latin1Char = Latin1Char CodePoint
+instance arbitraryLatin1Char :: Arbitrary Latin1Char where
+    arbitrary = Latin1Char <<< unsafeCodePoint <$> chooseInt 0x80 0xFF
 
-newtype AsciiLowerChar = AsciiLowerChar Char
-instance arbitrayAsciiLowerChar :: Arbitrary AsciiLowerChar where
-    arbitrary = AsciiLowerChar <<< fromCharCode <$> chooseInt 0x61 0x7A
+newtype NonLatin1Char = NonLatin1Char CodePoint
+instance arbitraryNonLatin1Char :: Arbitrary NonLatin1Char where
+    arbitrary = NonLatin1Char <<< unsafeCodePoint <$> chooseInt 0x100 0xFFFF
 
-newtype NonAsciiLowerChar = NonAsciiLowerChar Char
-instance arbitrayNonAsciiLowerChar :: Arbitrary NonAsciiLowerChar where
-    arbitrary = NonAsciiLowerChar <<< fromCharCode <$> oneOf (g :| [g , chooseInt 0x7B 0xFFFF])
+newtype AsciiLowerChar = AsciiLowerChar CodePoint
+instance arbitraryAsciiLowerChar :: Arbitrary AsciiLowerChar where
+    arbitrary = AsciiLowerChar <<< unsafeCodePoint <$> chooseInt 0x61 0x7A
+
+newtype NonAsciiLowerChar = NonAsciiLowerChar CodePoint
+instance arbitraryNonAsciiLowerChar :: Arbitrary NonAsciiLowerChar where
+    arbitrary = NonAsciiLowerChar <<< unsafeCodePoint <$> oneOf (g :| [g , chooseInt 0x7B 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x60
 
-newtype AsciiUpperChar = AsciiUpperChar Char
-instance arbitrayAsciiUpperChar :: Arbitrary AsciiUpperChar where
-    arbitrary = AsciiUpperChar <<< fromCharCode <$> chooseInt 0x41 0x5A
+newtype AsciiUpperChar = AsciiUpperChar CodePoint
+instance arbitraryAsciiUpperChar :: Arbitrary AsciiUpperChar where
+    arbitrary = AsciiUpperChar <<< unsafeCodePoint <$> chooseInt 0x41 0x5A
 
-newtype NonAsciiUpperChar = NonAsciiUpperChar Char
-instance arbitrayNonAsciiUpperChar :: Arbitrary NonAsciiUpperChar where
-    arbitrary = NonAsciiUpperChar <<< fromCharCode <$> oneOf (g :| [g , chooseInt 0x5B 0xFFFF])
+newtype NonAsciiUpperChar = NonAsciiUpperChar CodePoint
+instance arbitraryNonAsciiUpperChar :: Arbitrary NonAsciiUpperChar where
+    arbitrary = NonAsciiUpperChar <<< unsafeCodePoint <$> oneOf (g :| [g , chooseInt 0x5B 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x40
 
-newtype AsciiDigit = AsciiDigit Char
-instance arbitrayAsciiDigit :: Arbitrary AsciiDigit where
-    arbitrary = AsciiDigit <<< fromCharCode <$> chooseInt 0x30 0x39
+newtype AsciiDigit = AsciiDigit CodePoint
+instance arbitraryAsciiDigit :: Arbitrary AsciiDigit where
+    arbitrary = AsciiDigit <<< unsafeCodePoint <$> chooseInt 0x30 0x39
 
-newtype NonAsciiDigit = NonAsciiDigit Char
-instance arbitrayNonAsciiDigit :: Arbitrary NonAsciiDigit where
-    arbitrary = NonAsciiDigit <<< fromCharCode <$> oneOf (g :| [g , chooseInt 0x3A 0xFFFF])
+newtype NonAsciiDigit = NonAsciiDigit CodePoint
+instance arbitraryNonAsciiDigit :: Arbitrary NonAsciiDigit where
+    arbitrary = NonAsciiDigit <<< unsafeCodePoint <$> oneOf (g :| [g , chooseInt 0x3A 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
 
-newtype AsciiOctDigit = AsciiOctDigit Char
-instance arbitrayAsciiOctDigit :: Arbitrary AsciiOctDigit where
-    arbitrary = AsciiOctDigit <<< fromCharCode <$> chooseInt 0x30 0x37
+newtype AsciiOctDigit = AsciiOctDigit CodePoint
+instance arbitraryAsciiOctDigit :: Arbitrary AsciiOctDigit where
+    arbitrary = AsciiOctDigit <<< unsafeCodePoint <$> chooseInt 0x30 0x37
 
-newtype NonAsciiOctDigit = NonAsciiOctDigit Char
-instance arbitrayNonAsciiOctDigit :: Arbitrary NonAsciiOctDigit where
-    arbitrary = NonAsciiOctDigit <<< fromCharCode <$> oneOf (g :| [g , chooseInt 0x38 0xFFFF])
+newtype NonAsciiOctDigit = NonAsciiOctDigit CodePoint
+instance arbitraryNonAsciiOctDigit :: Arbitrary NonAsciiOctDigit where
+    arbitrary = NonAsciiOctDigit <<< unsafeCodePoint <$> oneOf (g :| [g , chooseInt 0x38 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
 
-newtype AsciiHexDigit = AsciiHexDigit Char
-instance arbitrayAsciiHexDigit :: Arbitrary AsciiHexDigit where
-    arbitrary = AsciiHexDigit <<< fromCharCode <$> oneOf (g :| [g, chooseInt 0x41 0x46, chooseInt 0x61 0x66])
+newtype AsciiHexDigit = AsciiHexDigit CodePoint
+instance arbitraryAsciiHexDigit :: Arbitrary AsciiHexDigit where
+    arbitrary = AsciiHexDigit <<< unsafeCodePoint <$> oneOf (g :| [g, chooseInt 0x41 0x46, chooseInt 0x61 0x66])
       where
         g :: Gen Int
         g = chooseInt 0x30 0x37
 
-newtype NonAsciiHexDigit = NonAsciiHexDigit Char
-instance arbitrayNonAsciiHexDigit :: Arbitrary NonAsciiHexDigit where
-    arbitrary = NonAsciiHexDigit <<< fromCharCode <$> oneOf (g :| [g, chooseInt 0x3A 0x40, chooseInt 0x4A 0x60, chooseInt 0x67 0xFFFF])
+newtype NonAsciiHexDigit = NonAsciiHexDigit CodePoint
+instance arbitraryNonAsciiHexDigit :: Arbitrary NonAsciiHexDigit where
+    arbitrary = NonAsciiHexDigit <<< unsafeCodePoint <$> oneOf (g :| [g, chooseInt 0x3A 0x40, chooseInt 0x4A 0x60, chooseInt 0x67 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
@@ -204,91 +216,91 @@ isAsciiUpperTests = describe "isAsciiUpper" do
 isControlTests :: forall eff . Spec eff Unit
 isControlTests = describe "isControl" do
     it "'\\04' is Control" $
-        isControl '\04' `shouldEqual` true
+        isControl (charPoint '\04') `shouldEqual` true
     it "'a' is not Control" $
-        isControl 'a' `shouldEqual` false
+        isControl (charPoint 'a') `shouldEqual` false
 
 isPrintTests :: forall eff . Spec eff Unit
 isPrintTests = describe "isPrint" do
     it "'\\04' is not Print" $
-        isPrint '\04' `shouldEqual` false
+        isPrint (charPoint '\04') `shouldEqual` false
     it "'\\n' is not Print" $
-        isPrint '\n' `shouldEqual` false
+        isPrint (charPoint '\n') `shouldEqual` false
     it "'a' is Print" $
-        isPrint 'a' `shouldEqual` true
+        isPrint (charPoint 'a') `shouldEqual` true
     it "' ' is Print" $
-        isPrint ' ' `shouldEqual` true
+        isPrint (charPoint ' ') `shouldEqual` true
 
 isSpaceTests :: forall eff . Spec eff Unit
 isSpaceTests = describe "isSpace" do
     it "' ' is Space" $
-        isSpace ' ' `shouldEqual` true
+        isSpace (charPoint ' ') `shouldEqual` true
     it "'　' is Space" $
-        isSpace '　' `shouldEqual` true
+        isSpace (charPoint '　') `shouldEqual` true
     it "'\\n' is Space" $
-        isSpace '\n' `shouldEqual` true
+        isSpace (charPoint '\n') `shouldEqual` true
     it "'\\t' is Space" $
-        isSpace '\t' `shouldEqual` true
+        isSpace (charPoint '\t') `shouldEqual` true
     it "'a' is not Space" $
-        isSpace 'a' `shouldEqual` false
+        isSpace (charPoint 'a') `shouldEqual` false
 
 isUpperTests :: forall eff . Spec eff Unit
 isUpperTests = describe "isUpper" do
     it "'Z' is Upper" $
-        isUpper 'Z' `shouldEqual` true
+        isUpper (charPoint 'Z') `shouldEqual` true
     it "'a' is not Upper" $
-        isUpper 'a' `shouldEqual` false
+        isUpper (charPoint 'a') `shouldEqual` false
     it "' ' is not Upper" $
-        isUpper ' ' `shouldEqual` false
+        isUpper (charPoint ' ') `shouldEqual` false
     it "'\\n' is not Upper" $
-        isUpper '\n' `shouldEqual` false
+        isUpper (charPoint '\n') `shouldEqual` false
     it "'日' is not Upper" $
-        isUpper '日' `shouldEqual` false
+        isUpper (charPoint '日') `shouldEqual` false
 
 isLowerTests :: forall eff . Spec eff Unit
 isLowerTests = describe "isLower" do
     it "'a' is Lower" $
-        isLower 'a' `shouldEqual` true
+        isLower (charPoint 'a') `shouldEqual` true
     it "'Z' is not Lower" $
-        isLower 'Z' `shouldEqual` false
+        isLower (charPoint 'Z') `shouldEqual` false
     it "' ' is not Lower" $
-        isLower ' ' `shouldEqual` false
+        isLower (charPoint ' ') `shouldEqual` false
     it "'\\n' is not Lower" $
-        isLower '\n' `shouldEqual` false
+        isLower (charPoint '\n') `shouldEqual` false
     it "'日' is not Lower" $
-        isLower '日' `shouldEqual` false
+        isLower (charPoint '日') `shouldEqual` false
 
 isAlphaTests :: forall eff . Spec eff Unit
 isAlphaTests = describe "isAlpha" do
     it "'a' is Alpha" $
-        isAlpha 'a' `shouldEqual` true
+        isAlpha (charPoint 'a') `shouldEqual` true
     it "'Z' is Alpha" $
-        isAlpha 'Z' `shouldEqual` true
+        isAlpha (charPoint 'Z') `shouldEqual` true
     it "'日' is Alpha" $
-        isAlpha '日' `shouldEqual` true
+        isAlpha (charPoint '日') `shouldEqual` true
     it "' ' is not Alpha" $
-        isAlpha ' ' `shouldEqual` false
+        isAlpha (charPoint ' ') `shouldEqual` false
     it "'\\n' is not Alpha" $
-        isAlpha '\n' `shouldEqual` false
+        isAlpha (charPoint '\n') `shouldEqual` false
 
 isAlphaNumTests :: forall eff . Spec eff Unit
 isAlphaNumTests = describe "isAlphaNum" do
     it "'a' is AlphaNum" $
-        isAlphaNum 'a' `shouldEqual` true
+        isAlphaNum (charPoint 'a') `shouldEqual` true
     it "'Z' is AlphaNum" $
-        isAlphaNum 'Z' `shouldEqual` true
+        isAlphaNum (charPoint 'Z') `shouldEqual` true
     it "'日' is AlphaNum" $
-        isAlphaNum '日' `shouldEqual` true
+        isAlphaNum (charPoint '日') `shouldEqual` true
     it "'1' is AlphaNum" $
-        isAlphaNum '1' `shouldEqual` true
+        isAlphaNum (charPoint '1') `shouldEqual` true
     it "'２' is AlphaNum" $
-        isAlphaNum '２' `shouldEqual` true
+        isAlphaNum (charPoint '２') `shouldEqual` true
     it "'③' is AlphaNum" $
-        isAlphaNum '③' `shouldEqual` true
+        isAlphaNum (charPoint '③') `shouldEqual` true
     it "' ' is not AlphaNum" $
-        isAlphaNum ' ' `shouldEqual` false
+        isAlphaNum (charPoint ' ') `shouldEqual` false
     it "'\\n' is not AlphaNum" $
-        isAlphaNum '\n' `shouldEqual` false
+        isAlphaNum (charPoint '\n') `shouldEqual` false
 
 isDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isDigitTests = describe "isDigit" do
@@ -308,36 +320,36 @@ isHexDigitTests = describe "isHexDigit" do
 isPunctuationTests :: forall eff . Spec eff Unit
 isPunctuationTests = describe "isPunctuation" do
     it "'a' is not Punctuation" $
-        isPunctuation 'a' `shouldEqual` false
+        isPunctuation (charPoint 'a') `shouldEqual` false
     it "'7' is not Punctuation" $
-        isPunctuation '7' `shouldEqual` false
+        isPunctuation (charPoint '7') `shouldEqual` false
     it "'♥' is not Punctuation" $
-        isPunctuation '♥' `shouldEqual` false
+        isPunctuation (charPoint '♥') `shouldEqual` false
     it "'日' is not Punctuation" $
-        isPunctuation '日' `shouldEqual` false
+        isPunctuation (charPoint '日') `shouldEqual` false
     it "'\"' is Punctuation" $
-        isPunctuation '"' `shouldEqual` true
+        isPunctuation (charPoint '"') `shouldEqual` true
     it "'?' is Punctuation" $
-        isPunctuation '?' `shouldEqual` true
+        isPunctuation (charPoint '?') `shouldEqual` true
     it "'—' is Punctuation" $
-        isPunctuation '—' `shouldEqual` true
+        isPunctuation (charPoint '—') `shouldEqual` true
 
 isSymbolTests :: forall eff . Spec eff Unit
 isSymbolTests = describe "isSymbol" do
     it "'a' is not Symbol" $
-        isSymbol 'a' `shouldEqual` false
+        isSymbol (charPoint 'a') `shouldEqual` false
     it "'6' is not Symbol" $
-        isSymbol '6' `shouldEqual` false
+        isSymbol (charPoint '6') `shouldEqual` false
     it "'語' is not Symbol" $
-        isSymbol '語' `shouldEqual` false
+        isSymbol (charPoint '語') `shouldEqual` false
     it "'-' is not Symbol" $
-        isSymbol '-' `shouldEqual` false
+        isSymbol (charPoint '-') `shouldEqual` false
     it "'♥' is Symbol" $
-        isSymbol '♥' `shouldEqual` true
+        isSymbol (charPoint '♥') `shouldEqual` true
     it "'=' is Symbol" $
-        isSymbol '=' `shouldEqual` true
+        isSymbol (charPoint '=') `shouldEqual` true
     it "'+' is Symbol" $
-        isSymbol '+' `shouldEqual` true
+        isSymbol (charPoint '+') `shouldEqual` true
 
 -- TODO: These.
 toUpperTests :: forall eff . Spec eff Unit
@@ -350,68 +362,68 @@ toTitleTests = pure unit
 digitToIntTests :: forall eff . Spec eff Unit
 digitToIntTests = describe "digitToInt" do
     it "'0'..'9' get mapped correctly" $
-        map digitToInt ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
+        map (digitToInt <<< charPoint) ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
             [Just 0, Just 1, Just 2, Just 3, Just 4, Just 5, Just 6, Just 7, Just 8, Just 9]
     it "'a'..'f' get mapped correctly" $
-        map digitToInt ['a','b','c','d','e','f'] `shouldEqual`
+        map (digitToInt <<< charPoint) ['a','b','c','d','e','f'] `shouldEqual`
             [Just 10, Just 11, Just 12, Just 13, Just 14, Just 15]
     it "'A'..'F' get mapped correctly" $
-        map digitToInt ['A','B','C','D','E','F'] `shouldEqual`
+        map (digitToInt <<< charPoint) ['A','B','C','D','E','F'] `shouldEqual`
             [Just 10, Just 11, Just 12, Just 13, Just 14, Just 15]
     it "'G' is not a digit" $
-        digitToInt 'G' `shouldEqual` Nothing
+        digitToInt (charPoint 'G') `shouldEqual` Nothing
     it "'♥' is not a digit" $
-        digitToInt '♥' `shouldEqual` Nothing
+        digitToInt (charPoint '♥') `shouldEqual` Nothing
     it "'国' is not a digit" $
-        digitToInt '国' `shouldEqual` Nothing
+        digitToInt (charPoint '国') `shouldEqual` Nothing
 
 isLetterTests:: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isLetterTests = describe "isLetter" do
-    it "isLetter == isAlpha" $ liftEff $ quickCheck \char -> isLetter char == isAlpha char
+    it "isLetter == isAlpha" $ liftEff $ quickCheck \(CP char) -> isLetter char == isAlpha char
 
 isMarkTests :: forall eff . Spec eff Unit
 isMarkTests = describe "isMark" do
     -- TODO: Add a positive test here.
     it "'a' is not Mark" $
-        isMark 'a' `shouldEqual` false
+        isMark (charPoint 'a') `shouldEqual` false
     it "'0' is not Mark" $
-        isMark '0' `shouldEqual` false
+        isMark (charPoint '0') `shouldEqual` false
     it "'語' is not Mark" $
-        isMark '語' `shouldEqual` false
+        isMark (charPoint '語') `shouldEqual` false
     it "'♥' is not Mark" $
-        isMark '♥' `shouldEqual` false
+        isMark (charPoint '♥') `shouldEqual` false
 
 isNumberTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
 isNumberTests = describe "isNumber" do
     it "'a' is not Number" $
-        isNumber 'a' `shouldEqual` false
+        isNumber (charPoint 'a') `shouldEqual` false
     it "'%' is not Number" $
-        isNumber '%' `shouldEqual` false
+        isNumber (charPoint '%') `shouldEqual` false
     it "'語' is not Number" $
-        isNumber '語' `shouldEqual` false
+        isNumber (charPoint '語') `shouldEqual` false
     it "'♥' is not Number" $
-        isNumber '♥' `shouldEqual` false
+        isNumber (charPoint '♥') `shouldEqual` false
     it "'3' is Number" $
-        isNumber '3' `shouldEqual` true
+        isNumber (charPoint '3') `shouldEqual` true
     it "'Ⅸ' is Number" $
-        isNumber 'Ⅸ' `shouldEqual` true
+        isNumber (charPoint 'Ⅸ') `shouldEqual` true
     it "'３' is Number" $
-        isNumber '３' `shouldEqual` true
+        isNumber (charPoint '３') `shouldEqual` true
     it "'⑳' is Number" $
-        isNumber '⑳' `shouldEqual` true
+        isNumber (charPoint '⑳') `shouldEqual` true
     it "0..9 are Number" $ liftEff $ quickCheck \(AsciiDigit char) -> isNumber char
 
 isSeparatorTests :: forall eff . Spec eff Unit
 isSeparatorTests = describe "isSeparator" do
     it "'a' is not Separator" $
-        isSeparator 'a' `shouldEqual` false
+        isSeparator (charPoint 'a') `shouldEqual` false
     it "'9' is not Separator" $
-        isSeparator '9' `shouldEqual` false
+        isSeparator (charPoint '9') `shouldEqual` false
     it "'\\n' is not Separator" $
-        isSeparator '\n' `shouldEqual` false
+        isSeparator (charPoint '\n') `shouldEqual` false
     it "'\\t' is not Separator" $
-        isSeparator '\t' `shouldEqual` false
+        isSeparator (charPoint '\t') `shouldEqual` false
     it "' ' is Separator" $
-        isSeparator ' ' `shouldEqual` true
+        isSeparator (charPoint ' ') `shouldEqual` true
     it "'\\160' is Separator" $
-        isSeparator '\160' `shouldEqual` true
+        isSeparator (charPoint '\160') `shouldEqual` true
