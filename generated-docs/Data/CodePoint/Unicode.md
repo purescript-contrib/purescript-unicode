@@ -1,4 +1,16 @@
-## Module Data.Char.Unicode
+## Module Data.CodePoint.Unicode
+
+#### `charPoint`
+
+``` purescript
+charPoint :: Char -> CodePoint
+```
+
+#### `modify`
+
+``` purescript
+modify :: (Int -> Int) -> (CodePoint -> CodePoint)
+```
 
 #### `GeneralCategory`
 
@@ -117,7 +129,7 @@ unicodeCatToGeneralCat :: UnicodeCategory -> GeneralCategory
 #### `generalCategory`
 
 ``` purescript
-generalCategory :: Char -> Maybe GeneralCategory
+generalCategory :: CodePoint -> Maybe GeneralCategory
 ```
 
 The Unicode general category of the character.
@@ -146,7 +158,7 @@ Just Space
 #### `isAscii`
 
 ``` purescript
-isAscii :: Char -> Boolean
+isAscii :: CodePoint -> Boolean
 ```
 
 Selects the first 128 characters of the Unicode character set,
@@ -155,7 +167,7 @@ corresponding to the ASCII character set.
 #### `isLatin1`
 
 ``` purescript
-isLatin1 :: Char -> Boolean
+isLatin1 :: CodePoint -> Boolean
 ```
 
 Selects the first 256 characters of the Unicode character set,
@@ -164,7 +176,7 @@ corresponding to the ISO 8859-1 (Latin-1) character set.
 #### `isAsciiLower`
 
 ``` purescript
-isAsciiLower :: Char -> Boolean
+isAsciiLower :: CodePoint -> Boolean
 ```
 
 Selects ASCII lower-case letters,
@@ -173,7 +185,7 @@ i.e. characters satisfying both `isAscii` and `isLower`.
 #### `isAsciiUpper`
 
 ``` purescript
-isAsciiUpper :: Char -> Boolean
+isAsciiUpper :: CodePoint -> Boolean
 ```
 
 Selects ASCII upper-case letters,
@@ -182,7 +194,7 @@ i.e. characters satisfying both `isAscii` and `isUpper`.
 #### `isControl`
 
 ``` purescript
-isControl :: Char -> Boolean
+isControl :: CodePoint -> Boolean
 ```
 
 Selects control characters, which are the non-printing characters of
@@ -191,7 +203,7 @@ the Latin-1 subset of Unicode.
 #### `isPrint`
 
 ``` purescript
-isPrint :: Char -> Boolean
+isPrint :: CodePoint -> Boolean
 ```
 
 Selects printable Unicode characters
@@ -200,7 +212,7 @@ Selects printable Unicode characters
 #### `isSpace`
 
 ``` purescript
-isSpace :: Char -> Boolean
+isSpace :: CodePoint -> Boolean
 ```
 
 Returns `True` for any Unicode space character, and the control
@@ -211,7 +223,7 @@ characters `\t`, `\n`, `\r`, `\f`, `\v`.
 #### `isUpper`
 
 ``` purescript
-isUpper :: Char -> Boolean
+isUpper :: CodePoint -> Boolean
 ```
 
 Selects upper-case or title-case alphabetic Unicode characters (letters).
@@ -221,7 +233,7 @@ single-character form of /Lj/.
 #### `isLower`
 
 ``` purescript
-isLower :: Char -> Boolean
+isLower :: CodePoint -> Boolean
 ```
 
 Selects lower-case alphabetic Unicode characters (letters).
@@ -229,7 +241,7 @@ Selects lower-case alphabetic Unicode characters (letters).
 #### `isAlpha`
 
 ``` purescript
-isAlpha :: Char -> Boolean
+isAlpha :: CodePoint -> Boolean
 ```
 
 Selects alphabetic Unicode characters (lower-case, upper-case and
@@ -238,7 +250,7 @@ title-case letters, plus letters of caseless scripts and modifiers letters).
 #### `isAlphaNum`
 
 ``` purescript
-isAlphaNum :: Char -> Boolean
+isAlphaNum :: CodePoint -> Boolean
 ```
 
 Selects alphabetic or numeric digit Unicode characters.
@@ -250,7 +262,7 @@ but are not used by the printer and reader to represent numbers.
 #### `isDigit`
 
 ``` purescript
-isDigit :: Char -> Boolean
+isDigit :: CodePoint -> Boolean
 ```
 
 Selects ASCII digits, i.e. `0..9`.
@@ -258,7 +270,7 @@ Selects ASCII digits, i.e. `0..9`.
 #### `isOctDigit`
 
 ``` purescript
-isOctDigit :: Char -> Boolean
+isOctDigit :: CodePoint -> Boolean
 ```
 
 Selects ASCII octal digits, i.e. `0..7`.
@@ -266,7 +278,7 @@ Selects ASCII octal digits, i.e. `0..7`.
 #### `isHexDigit`
 
 ``` purescript
-isHexDigit :: Char -> Boolean
+isHexDigit :: CodePoint -> Boolean
 ```
 
 Selects ASCII hexadecimal digits,
@@ -275,7 +287,7 @@ i.e. `0..9, A..F, a..f`.
 #### `isPunctuation`
 
 ``` purescript
-isPunctuation :: Char -> Boolean
+isPunctuation :: CodePoint -> Boolean
 ```
 
 Selects Unicode punctuation characters, including various kinds
@@ -319,7 +331,7 @@ true
 #### `isSymbol`
 
 ``` purescript
-isSymbol :: Char -> Boolean
+isSymbol :: CodePoint -> Boolean
 ```
 
 Selects Unicode symbol characters, including mathematical and
@@ -364,7 +376,7 @@ false
 #### `toUpper`
 
 ``` purescript
-toUpper :: Char -> Char
+toUpper :: CodePoint -> CodePoint
 ```
 
 Convert a letter to the corresponding upper-case letter, if any.
@@ -373,7 +385,7 @@ Any other character is returned unchanged.
 #### `toLower`
 
 ``` purescript
-toLower :: Char -> Char
+toLower :: CodePoint -> CodePoint
 ```
 
 Convert a letter to the corresponding lower-case letter, if any.
@@ -382,7 +394,7 @@ Any other character is returned unchanged.
 #### `toTitle`
 
 ``` purescript
-toTitle :: Char -> Char
+toTitle :: CodePoint -> CodePoint
 ```
 
 Convert a letter to the corresponding title-case or upper-case
@@ -393,12 +405,14 @@ Any other character is returned unchanged.
 #### `digitToInt`
 
 ``` purescript
-digitToInt :: Char -> Maybe Int
+digitToInt :: CodePoint -> Maybe Int
 ```
 
-Convert a single digit `Char` to the corresponding `Just Int` if its argument
+Convert a single digit `CodePoint` to the corresponding `Just Int` if its argument
 satisfies `isHexDigit`, if it is one of `0..9, A..F, a..f`. Anything else
 converts to `Nothing`
+
+Fixme: example should be updated to use CodePoints
 
 ```
 >>> import Data.Traversable
@@ -419,7 +433,7 @@ Nothing
 #### `isLetter`
 
 ``` purescript
-isLetter :: Char -> Boolean
+isLetter :: CodePoint -> Boolean
 ```
 
 Selects alphabetic Unicode characters (lower-case, upper-case and
@@ -473,7 +487,7 @@ True
 #### `isMark`
 
 ``` purescript
-isMark :: Char -> Boolean
+isMark :: CodePoint -> Boolean
 ```
 
 Selects Unicode mark characters, for example accents and the
@@ -520,7 +534,7 @@ false
 #### `isNumber`
 
 ``` purescript
-isNumber :: Char -> Boolean
+isNumber :: CodePoint -> Boolean
 ```
 
 Selects Unicode numeric characters, including digits from various
@@ -568,7 +582,7 @@ true
 #### `isSeparator`
 
 ``` purescript
-isSeparator :: Char -> Boolean
+isSeparator :: CodePoint -> Boolean
 ```
 
 Selects Unicode space and separator characters.

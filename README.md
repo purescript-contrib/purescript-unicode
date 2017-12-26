@@ -14,11 +14,11 @@ $ bower install purescript-unicode
 
 ## Module documentation
 
-- [Data.Char.Unicode](docs/Data/Char/Unicode.md)
+- [Data.CodePoint.Unicode](docs/Data/Char/Unicode.md)
 
 ## Generate Internal module
 
-The [Data.Char.Unicode.Internal](src/Data/Char/Unicode/Internal.purs) module
+The [Data.CodePoint.Unicode.Internal](src/Data/Char/Unicode/Internal.purs) module
 can be generated with the following command:
 
 ```sh
