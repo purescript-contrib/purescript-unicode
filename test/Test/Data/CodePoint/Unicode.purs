@@ -1,5 +1,4 @@
-
-module Test.Data.Char.Unicode (dataCharUnicodeTests) where
+module Test.Data.CodePoint.Unicode (dataCharUnicodeTests) where
 
 import Prelude
 
@@ -18,29 +17,29 @@ import Test.QuickCheck.Gen (Gen(), oneOf, chooseInt)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual)
 
-import Data.Char.Unicode ( GeneralCategory(..)
-                         , digitToInt
-                         , generalCategory
-                         , isAlpha
-                         , isAlphaNum
-                         , isAscii
-                         , isAsciiLower
-                         , isAsciiUpper
-                         , isControl
-                         , isDigit
-                         , isHexDigit
-                         , isLatin1
-                         , isLetter
-                         , isLower
-                         , isMark
-                         , isNumber
-                         , isOctDigit
-                         , isPrint
-                         , isPunctuation
-                         , isSeparator
-                         , isSpace
-                         , isSymbol
-                         , isUpper )
+import Data.CodePoint.Unicode ( GeneralCategory(..)
+                              , digitToInt
+                              , generalCategory
+                              , isAlpha
+                              , isAlphaNum
+                              , isAscii
+                              , isAsciiLower
+                              , isAsciiUpper
+                              , isControl
+                              , isDigit
+                              , isHexDigit
+                              , isLatin1
+                              , isLetter
+                              , isLower
+                              , isMark
+                              , isNumber
+                              , isOctDigit
+                              , isPrint
+                              , isPunctuation
+                              , isSeparator
+                              , isSpace
+                              , isSymbol
+                              , isUpper )
 
 unsafeCodePoint :: Int -> CodePoint
 unsafeCodePoint = unsafePartial fromJust <<< codePointFromInt

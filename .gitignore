@@ -10,3 +10,5 @@
 # Release builds of the purescript compiler appear to be compiled with
 # profiling enabled.  This causes psc and friends to create these *.tix files.
 *.tix
+
+UnicodeData\.txt

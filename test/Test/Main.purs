@@ -8,7 +8,7 @@ import Control.Monad.Eff.Exception (EXCEPTION)
 import Control.Monad.Eff.Random (RANDOM)
 import Control.Monad.Eff.Timer (TIMER)
 import Node.Process (PROCESS)
-import Test.Data.Char.Unicode (dataCharUnicodeTests)
+import Test.Data.CodePoint.Unicode (dataCharUnicodeTests)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
 

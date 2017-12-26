@@ -28,7 +28,7 @@ echo
 
 cat <<EOF
 
-module Data.Char.Unicode.Internal where
+module Data.CodePoint.Unicode.Internal where
 
 import Prelude
 

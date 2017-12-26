@@ -23,5 +23,5 @@ can be generated with the following command:
 
 ```sh
 $ wget 'http://www.unicode.org/Public/6.0.0/ucd/UnicodeData.txt'
-$ ./ubconfc < UnicodeData.txt > src/Data/Char/Unicode/Internal.purs
+$ ./ubconfc < UnicodeData.txt > src/Data/CodePoint/Unicode/Internal.purs
 ```

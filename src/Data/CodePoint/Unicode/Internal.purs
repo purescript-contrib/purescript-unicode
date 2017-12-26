@@ -4,7 +4,7 @@
 -----------------------------------------------------------
 
 
-module Data.Char.Unicode.Internal where
+module Data.CodePoint.Unicode.Internal where
 
 import Prelude
 
@@ -4864,4 +4864,3 @@ uGencat :: Int -> Maybe UnicodeCategory
 uGencat char =
     let conversionRule = getRule allchars char numBlocks
     in map (\(ConversionRule rule) -> rule.unicodeCat) conversionRule
-

@@ -1,23 +1,22 @@
-
-module Data.Char.Unicode where
+module Data.CodePoint.Unicode where
 
 import Prelude
 
 import Data.Char (toCharCode)
 import Data.String.CodePoints (CodePoint, codePointToInt, codePointFromInt)
-import Data.Char.Unicode.Internal ( UnicodeCategory(..)
-                                  , uTowtitle
-                                  , uTowlower
-                                  , uTowupper
-                                  , uIswalnum
-                                  , uIswalpha
-                                  , uIswlower
-                                  , uIswupper
-                                  , uIswspace
-                                  , uIswprint
-                                  , uIswcntrl
-                                  , uGencat
-                                  )
+import Data.CodePoint.Unicode.Internal ( UnicodeCategory(..)
+                                       , uTowtitle
+                                       , uTowlower
+                                       , uTowupper
+                                       , uIswalnum
+                                       , uIswalpha
+                                       , uIswlower
+                                       , uIswupper
+                                       , uIswspace
+                                       , uIswprint
+                                       , uIswcntrl
+                                       , uGencat
+                                       )
 import Data.Maybe (Maybe(..), fromJust)
 import Partial.Unsafe (unsafePartial)
 
