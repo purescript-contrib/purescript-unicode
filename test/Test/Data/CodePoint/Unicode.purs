@@ -2,10 +2,7 @@ module Test.Data.CodePoint.Unicode (dataCharUnicodeTests) where
 
 import Prelude
 
-import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Console (CONSOLE())
-import Control.Monad.Eff.Exception (EXCEPTION())
-import Control.Monad.Eff.Random (RANDOM())
+import Effect.Class (liftEffect)
 import Data.Char (toCharCode)
 import Data.Enum (toEnumWithDefaults, fromEnum)
 import Data.Maybe (Maybe(..), fromJust)
@@ -45,7 +42,7 @@ import Data.CodePoint.Unicode ( GeneralCategory(..)
 codePointFromInt :: Int -> CodePoint
 codePointFromInt = toEnumWithDefaults bottom top
 
-dataCharUnicodeTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+dataCharUnicodeTests :: Spec Unit
 dataCharUnicodeTests = describe "module Data.CodePoint.Unicode" do
     generalCategoryDataTypeTests
     generalCategoryTests
@@ -73,7 +70,7 @@ dataCharUnicodeTests = describe "module Data.CodePoint.Unicode" do
     isNumberTests
     isSeparatorTests
 
-generalCategoryDataTypeTests :: forall eff . Spec eff Unit
+generalCategoryDataTypeTests :: Spec Unit
 generalCategoryDataTypeTests = describe "GeneralCategory instances" do
     describe "Eq instance" do
         it "UppercaseLetter == UppercaseLetter" $
@@ -92,7 +89,7 @@ generalCategoryDataTypeTests = describe "GeneralCategory instances" do
         it "top == NotAssigned" $
             top `shouldEqual` NotAssigned
 
-generalCategoryTests :: forall eff . Spec eff Unit
+generalCategoryTests :: Spec Unit
 generalCategoryTests = describe "generalCategory" do
     it "generalCategory (codePointFromChar 'a') == LowercaseLetter" $
         generalCategory (codePointFromChar 'a') `shouldEqual` Just LowercaseLetter
@@ -189,35 +186,35 @@ instance arbitraryNonAsciiHexDigit :: Arbitrary NonAsciiHexDigit where
         g :: Gen Int
         g = chooseInt 0 0x2F
 
-isAsciiTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isAsciiTests :: Spec Unit
 isAsciiTests = describe "isAscii" do
-    it "ascii chars are ascii" $ liftEff $ quickCheck \(AsciiChar char) -> isAscii char
-    it "non ascii chars are not ascii" $ liftEff $ quickCheck \(NonAsciiChar char) -> not $ isAscii char
+    it "ascii chars are ascii" $ liftEffect $ quickCheck \(AsciiChar char) -> isAscii char
+    it "non ascii chars are not ascii" $ liftEffect $ quickCheck \(NonAsciiChar char) -> not $ isAscii char
 
-isLatin1Tests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isLatin1Tests :: Spec Unit
 isLatin1Tests = describe "isLatin1" do
-    it "ascii chars are latin1" $ liftEff $ quickCheck \(AsciiChar char) -> isLatin1 char
-    it "latin1 chars are latin1" $ liftEff $ quickCheck \(Latin1Char char) -> isLatin1 char
-    it "non latin1 chars are not latin1" $ liftEff $ quickCheck \(NonLatin1Char char) -> not $ isLatin1 char
+    it "ascii chars are latin1" $ liftEffect $ quickCheck \(AsciiChar char) -> isLatin1 char
+    it "latin1 chars are latin1" $ liftEffect $ quickCheck \(Latin1Char char) -> isLatin1 char
+    it "non latin1 chars are not latin1" $ liftEffect $ quickCheck \(NonLatin1Char char) -> not $ isLatin1 char
 
-isAsciiLowerTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isAsciiLowerTests :: Spec Unit
 isAsciiLowerTests = describe "isAsciiLower" do
-    it "lower ascii chars are lower ascii" $ liftEff $ quickCheck \(AsciiLowerChar char) -> isAsciiLower char
-    it "non lower ascii chars are not lower ascii" $ liftEff $ quickCheck \(NonAsciiLowerChar char) -> not $ isAsciiLower char
+    it "lower ascii chars are lower ascii" $ liftEffect $ quickCheck \(AsciiLowerChar char) -> isAsciiLower char
+    it "non lower ascii chars are not lower ascii" $ liftEffect $ quickCheck \(NonAsciiLowerChar char) -> not $ isAsciiLower char
 
-isAsciiUpperTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isAsciiUpperTests :: Spec Unit
 isAsciiUpperTests = describe "isAsciiUpper" do
-    it "upper ascii chars are upper ascii" $ liftEff $ quickCheck \(AsciiUpperChar char) -> isAsciiUpper char
-    it "non upper ascii chars are not upper ascii" $ liftEff $ quickCheck \(NonAsciiUpperChar char) -> not $ isAsciiUpper char
+    it "upper ascii chars are upper ascii" $ liftEffect $ quickCheck \(AsciiUpperChar char) -> isAsciiUpper char
+    it "non upper ascii chars are not upper ascii" $ liftEffect $ quickCheck \(NonAsciiUpperChar char) -> not $ isAsciiUpper char
 
-isControlTests :: forall eff . Spec eff Unit
+isControlTests :: Spec Unit
 isControlTests = describe "isControl" do
     it "'\\04' is Control" $
         isControl (codePointFromChar '\04') `shouldEqual` true
     it "'a' is not Control" $
         isControl (codePointFromChar 'a') `shouldEqual` false
 
-isPrintTests :: forall eff . Spec eff Unit
+isPrintTests :: Spec Unit
 isPrintTests = describe "isPrint" do
     it "'\\04' is not Print" $
         isPrint (codePointFromChar '\04') `shouldEqual` false
@@ -228,7 +225,7 @@ isPrintTests = describe "isPrint" do
     it "' ' is Print" $
         isPrint (codePointFromChar ' ') `shouldEqual` true
 
-isSpaceTests :: forall eff . Spec eff Unit
+isSpaceTests :: Spec Unit
 isSpaceTests = describe "isSpace" do
     it "' ' is Space" $
         isSpace (codePointFromChar ' ') `shouldEqual` true
@@ -241,7 +238,7 @@ isSpaceTests = describe "isSpace" do
     it "'a' is not Space" $
         isSpace (codePointFromChar 'a') `shouldEqual` false
 
-isUpperTests :: forall eff . Spec eff Unit
+isUpperTests :: Spec Unit
 isUpperTests = describe "isUpper" do
     it "'Z' is Upper" $
         isUpper (codePointFromChar 'Z') `shouldEqual` true
@@ -254,7 +251,7 @@ isUpperTests = describe "isUpper" do
     it "'日' is not Upper" $
         isUpper (codePointFromChar '日') `shouldEqual` false
 
-isLowerTests :: forall eff . Spec eff Unit
+isLowerTests :: Spec Unit
 isLowerTests = describe "isLower" do
     it "'a' is Lower" $
         isLower (codePointFromChar 'a') `shouldEqual` true
@@ -267,7 +264,7 @@ isLowerTests = describe "isLower" do
     it "'日' is not Lower" $
         isLower (codePointFromChar '日') `shouldEqual` false
 
-isAlphaTests :: forall eff . Spec eff Unit
+isAlphaTests :: Spec Unit
 isAlphaTests = describe "isAlpha" do
     it "'a' is Alpha" $
         isAlpha (codePointFromChar 'a') `shouldEqual` true
@@ -280,7 +277,7 @@ isAlphaTests = describe "isAlpha" do
     it "'\\n' is not Alpha" $
         isAlpha (codePointFromChar '\n') `shouldEqual` false
 
-isAlphaNumTests :: forall eff . Spec eff Unit
+isAlphaNumTests :: Spec Unit
 isAlphaNumTests = describe "isAlphaNum" do
     it "'a' is AlphaNum" $
         isAlphaNum (codePointFromChar 'a') `shouldEqual` true
@@ -299,22 +296,22 @@ isAlphaNumTests = describe "isAlphaNum" do
     it "'\\n' is not AlphaNum" $
         isAlphaNum (codePointFromChar '\n') `shouldEqual` false
 
-isDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isDigitTests :: Spec Unit
 isDigitTests = describe "isDigit" do
-    it "digits are digits" $ liftEff $ quickCheck \(AsciiDigit char) -> isDigit char
-    it "non digits are not digits" $ liftEff $ quickCheck \(NonAsciiDigit char) -> not $ isDigit char
+    it "digits are digits" $ liftEffect $ quickCheck \(AsciiDigit char) -> isDigit char
+    it "non digits are not digits" $ liftEffect $ quickCheck \(NonAsciiDigit char) -> not $ isDigit char
 
-isOctDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isOctDigitTests :: Spec Unit
 isOctDigitTests = describe "isOctDigit" do
-    it "oct digits are oct digits" $ liftEff $ quickCheck \(AsciiOctDigit char) -> isOctDigit char
-    it "non oct digits are not oct digits" $ liftEff $ quickCheck \(NonAsciiOctDigit char) -> not $ isOctDigit char
+    it "oct digits are oct digits" $ liftEffect $ quickCheck \(AsciiOctDigit char) -> isOctDigit char
+    it "non oct digits are not oct digits" $ liftEffect $ quickCheck \(NonAsciiOctDigit char) -> not $ isOctDigit char
 
-isHexDigitTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isHexDigitTests :: Spec Unit
 isHexDigitTests = describe "isHexDigit" do
-    it "hex digits are hex digits" $ liftEff $ quickCheck \(AsciiHexDigit char) -> isHexDigit char
-    it "non hex digits are not hex digits" $ liftEff $ quickCheck \(NonAsciiHexDigit char) -> not $ isHexDigit char
+    it "hex digits are hex digits" $ liftEffect $ quickCheck \(AsciiHexDigit char) -> isHexDigit char
+    it "non hex digits are not hex digits" $ liftEffect $ quickCheck \(NonAsciiHexDigit char) -> not $ isHexDigit char
 
-isPunctuationTests :: forall eff . Spec eff Unit
+isPunctuationTests :: Spec Unit
 isPunctuationTests = describe "isPunctuation" do
     it "'a' is not Punctuation" $
         isPunctuation (codePointFromChar 'a') `shouldEqual` false
@@ -331,7 +328,7 @@ isPunctuationTests = describe "isPunctuation" do
     it "'—' is Punctuation" $
         isPunctuation (codePointFromChar '—') `shouldEqual` true
 
-isSymbolTests :: forall eff . Spec eff Unit
+isSymbolTests :: Spec Unit
 isSymbolTests = describe "isSymbol" do
     it "'a' is not Symbol" $
         isSymbol (codePointFromChar 'a') `shouldEqual` false
@@ -349,14 +346,14 @@ isSymbolTests = describe "isSymbol" do
         isSymbol (codePointFromChar '+') `shouldEqual` true
 
 -- TODO: These.
-toUpperTests :: forall eff . Spec eff Unit
+toUpperTests :: Spec Unit
 toUpperTests = pure unit
-toLowerTests :: forall eff . Spec eff Unit
+toLowerTests :: Spec Unit
 toLowerTests = pure unit
-toTitleTests :: forall eff . Spec eff Unit
+toTitleTests :: Spec Unit
 toTitleTests = pure unit
 
-digitToIntTests :: forall eff . Spec eff Unit
+digitToIntTests :: Spec Unit
 digitToIntTests = describe "digitToInt" do
     it "'0'..'9' get mapped correctly" $
         map (digitToInt <<< codePointFromChar) ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
@@ -374,11 +371,11 @@ digitToIntTests = describe "digitToInt" do
     it "'国' is not a digit" $
         digitToInt (codePointFromChar '国') `shouldEqual` Nothing
 
-isLetterTests:: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isLetterTests:: Spec Unit
 isLetterTests = describe "isLetter" do
-    it "isLetter == isAlpha" $ liftEff $ quickCheck \(CP char) -> isLetter char == isAlpha char
+    it "isLetter == isAlpha" $ liftEffect $ quickCheck \(CP char) -> isLetter char == isAlpha char
 
-isMarkTests :: forall eff . Spec eff Unit
+isMarkTests :: Spec Unit
 isMarkTests = describe "isMark" do
     -- TODO: Add a positive test here.
     it "'a' is not Mark" $
@@ -390,7 +387,7 @@ isMarkTests = describe "isMark" do
     it "'♥' is not Mark" $
         isMark (codePointFromChar '♥') `shouldEqual` false
 
-isNumberTests :: forall eff . Spec (console :: CONSOLE, random :: RANDOM, exception :: EXCEPTION | eff) Unit
+isNumberTests :: Spec Unit
 isNumberTests = describe "isNumber" do
     it "'a' is not Number" $
         isNumber (codePointFromChar 'a') `shouldEqual` false
@@ -408,9 +405,9 @@ isNumberTests = describe "isNumber" do
         isNumber (codePointFromChar '３') `shouldEqual` true
     it "'⑳' is Number" $
         isNumber (codePointFromChar '⑳') `shouldEqual` true
-    it "0..9 are Number" $ liftEff $ quickCheck \(AsciiDigit char) -> isNumber char
+    it "0..9 are Number" $ liftEffect $ quickCheck \(AsciiDigit char) -> isNumber char
 
-isSeparatorTests :: forall eff . Spec eff Unit
+isSeparatorTests :: Spec Unit
 isSeparatorTests = describe "isSeparator" do
     it "'a' is not Separator" $
         isSeparator (codePointFromChar 'a') `shouldEqual` false
