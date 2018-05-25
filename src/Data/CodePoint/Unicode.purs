@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Char (toCharCode)
 import Data.String.CodePoints (CodePoint, codePointFromChar)
-import Data.Enum (toEnum, fromEnum)
+import Data.Enum (enumFromTo, toEnum, fromEnum)
 import Data.CodePoint.Unicode.Internal ( UnicodeCategory(..)
                                        , uTowtitle
                                        , uTowlower
@@ -49,7 +49,7 @@ modify f = fromMaybe <*> (toEnum <<< f <<< fromEnum)
 -- |
 -- | ```
 -- | >>> NonSpacingMark <= MathSymbol
--- | True
+-- | true
 -- | ```
 -- |
 -- | `Enum` instance (TODO: this is not implemented yet):
@@ -562,25 +562,25 @@ digitToInt c = result
 -- |
 -- | ```
 -- | >>> isLetter (codePointFromChar 'a')
--- | True
+-- | true
 -- | >>> isLetter (codePointFromChar 'A')
--- | True
+-- | true
 -- | >>> isLetter (codePointFromChar '0')
--- | False
+-- | false
 -- | >>> isLetter (codePointFromChar '%')
--- | False
+-- | false
 -- | >>> isLetter (codePointFromChar '♥')
--- | False
+-- | false
 -- | >>> isLetter (codePointFromChar '\31')
--- | False
+-- | false
 -- | ```
 -- |
 -- | Ensure that 'isLetter' and 'isAlpha' are equivalent.
 -- |
 -- | ```
--- | >>> let chars = [(chr 0)..]
--- | >>> let letters = map isLetter chars
--- | >>> let alphas = map isAlpha chars
+-- | >>> chars = enumFromTo bottom top
+-- | >>> letters = map isLetter chars
+-- | >>> alphas = map isAlpha chars
 -- | >>> letters == alphas
 -- | True
 -- | ```
@@ -624,7 +624,7 @@ isLetter c =
 -- | another character before they become printable:
 -- |
 -- | ```
--- | >>> map isMark "ò"
+-- | >>> map isMark (toCodePointArray "ò")
 -- | [false,true]
 -- | ```
 -- |

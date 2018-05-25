@@ -352,7 +352,7 @@ getRule blocks unichar size =
 bsearch :: forall a . a -> Array a -> Int -> (a -> a -> Ordering) -> Maybe a
 bsearch a array size compare = go 0 size
     where
-    go i k | i > k = Nothing
+    go i k | i > k || i >= Array.length array = Nothing
            | otherwise = let j = floor (toNumber (i + k) / 2.0)
                              b = unsafePartial (Array.unsafeIndex array j)
                          in case compare a b of
