@@ -19,14 +19,14 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-maybe": "#compiler/0.12",
-    "purescript-foldable-traversable": "#compiler/0.12",
-    "purescript-strings": "#compiler/0.12"
+    "purescript-maybe": "^4.0.0",
+    "purescript-foldable-traversable": "^4.0.0",
+    "purescript-strings": "^4.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^3.0.0",
-    "purescript-spec": "^0.13.0",
-    "purescript-random": "^3.0.0",
-    "purescript-quickcheck": "^4.0.0"
+    "purescript-console": "^4.1.0",
+    "purescript-spec": "^2.0.0",
+    "purescript-random": "^4.0.0",
+    "purescript-quickcheck": "^5.0.0"
   }
 }
