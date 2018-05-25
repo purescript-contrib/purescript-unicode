@@ -3,12 +3,10 @@ module Test.Data.CodePoint.Unicode (dataCharUnicodeTests) where
 import Prelude
 
 import Effect.Class (liftEffect)
-import Data.Char (toCharCode)
-import Data.Enum (toEnumWithDefaults, fromEnum)
-import Data.Maybe (Maybe(..), fromJust)
+import Data.Enum (toEnumWithDefaults)
+import Data.Maybe (Maybe(..))
 import Data.NonEmpty ((:|))
 import Data.String.CodePoints (CodePoint, codePointFromChar)
-import Partial.Unsafe (unsafePartial)
 import Test.QuickCheck (quickCheck)
 import Test.QuickCheck.Arbitrary (class Arbitrary)
 import Test.QuickCheck.Gen (Gen(), oneOf, chooseInt)

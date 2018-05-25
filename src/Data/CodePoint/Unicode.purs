@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Char (toCharCode)
 import Data.String.CodePoints (CodePoint, codePointFromChar)
-import Data.Enum (enumFromTo, toEnum, fromEnum)
+import Data.Enum (toEnum, fromEnum)
 import Data.CodePoint.Unicode.Internal ( UnicodeCategory(..)
                                        , uTowtitle
                                        , uTowlower
