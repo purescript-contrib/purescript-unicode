@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Char (toCharCode)
 import Data.String.CodePoints (CodePoint, codePointFromChar)
-import Data.Enum (toEnum, fromEnum)
+import Data.Enum (fromEnum)
 import Data.CodePoint.Unicode.Internal ( UnicodeCategory(..)
                                        , uTowtitle
                                        , uTowlower
@@ -18,10 +18,11 @@ import Data.CodePoint.Unicode.Internal ( UnicodeCategory(..)
                                        , uIswcntrl
                                        , uGencat
                                        )
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..))
+import Unsafe.Coerce (unsafeCoerce)
 
 modify :: (Int -> Int) -> (CodePoint -> CodePoint)
-modify f = fromMaybe <*> (toEnum <<< f <<< fromEnum)
+modify f = unsafeCoerce
 
 -- | Unicode General Categories (column 2 of the UnicodeData table) in
 -- | the order they are listed in the Unicode standard (the Unicode
