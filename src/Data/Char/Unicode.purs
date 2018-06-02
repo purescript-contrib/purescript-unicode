@@ -1,21 +1,45 @@
-module Data.Char.Unicode where
+module Data.Char.Unicode
+  ( -- Predicates
+    isAscii
+  , isAsciiLower
+  , isAsciiUpper
+  , isLatin1
+  , isLower
+  , isUpper
+  , isAlpha
+  , isAlphaNum
+  , isLetter
+  , isDigit
+  , isOctDigit
+  , isHexDigit
+  , isControl
+  , isPrint
+  , isSpace
+  , isSymbol
+  , isSeparator
+  , isPunctuation
+  , isMark
+  , isNumber
+
+  , digitToInt
+
+  -- Case conversion
+  , toLower
+  , toUpper
+  , toTitle
+
+  -- Unicode General Categories
+  , GeneralCategory(..)
+  , unicodeCatToGeneralCat
+  , generalCatToInt
+  , generalCatToUnicodeCat
+  , generalCategory
+  ) where
 
 import Prelude
 
 import Data.Char (toCharCode)
-import Data.Char.Unicode.Internal ( UnicodeCategory(..)
-                                  , uTowtitle
-                                  , uTowlower
-                                  , uTowupper
-                                  , uIswalnum
-                                  , uIswalpha
-                                  , uIswlower
-                                  , uIswupper
-                                  , uIswspace
-                                  , uIswprint
-                                  , uIswcntrl
-                                  , uGencat
-                                  )
+import Data.Char.Unicode.Internal (UnicodeCategory(..), uTowtitle, uTowlower, uTowupper, uIswalnum, uIswalpha, uIswlower, uIswupper, uIswspace, uIswprint, uIswcntrl, uGencat)
 import Data.Maybe (Maybe(..))
 
 -- | Unicode General Categories (column 2 of the UnicodeData table) in
@@ -492,6 +516,10 @@ toLower = withCharCode uTowlower
 toTitle :: Char -> Char
 toTitle = withCharCode uTowtitle
 
+-- | We define this via the FFI because we want to avoid the
+-- | dictionary overhead of going via Enum, and because we're certain
+-- | that the Unicode table we used to generate these conversions
+-- | doesn't generate char codes outside the valid range.
 foreign import withCharCode :: (Int -> Int) -> Char -> Char
 
 -- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
