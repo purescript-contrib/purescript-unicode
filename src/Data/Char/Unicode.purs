@@ -1,5 +1,34 @@
-
-module Data.Char.Unicode where
+module Data.Char.Unicode
+  ( isSeparator
+  , isNumber
+  , isMark
+  , isLetter
+  , digitToInt
+  , toTitle
+  , toLower
+  , toUpper
+  , isSymbol
+  , isPunctuation
+  , isHexDigit
+  , isOctDigit
+  , isDigit
+  , isAlphaNum
+  , isAlpha
+  , isLower
+  , isUpper
+  , isSpace
+  , isPrint
+  , isControl
+  , isAsciiUpper
+  , isAsciiLower
+  , isLatin1
+  , isAscii
+  , GeneralCategory
+  , generalCategory
+  , unicodeCatToGeneralCat
+  , generalCatToUnicodeCat
+  , generalCatToInt
+  ) where
 
 import Prelude
 
@@ -478,19 +507,19 @@ isSymbol c =
 
 -- | Convert a letter to the corresponding upper-case letter, if any.
 -- | Any other character is returned unchanged.
-toUpper :: Char -> Char
+toUpper :: Char -> Maybe Char
 toUpper = fromCharCode <<< uTowupper <<< toCharCode
 
 -- | Convert a letter to the corresponding lower-case letter, if any.
 -- | Any other character is returned unchanged.
-toLower :: Char -> Char
+toLower :: Char -> Maybe Char
 toLower = fromCharCode <<< uTowlower <<< toCharCode
 
 -- | Convert a letter to the corresponding title-case or upper-case
 -- | letter, if any.  (Title case differs from upper case only for a small
 -- | number of ligature letters.)
 -- | Any other character is returned unchanged.
-toTitle :: Char -> Char
+toTitle :: Char -> Maybe Char
 toTitle = fromCharCode <<< uTowtitle <<< toCharCode
 
 -- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
