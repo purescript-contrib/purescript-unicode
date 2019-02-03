@@ -15,7 +15,7 @@ $ bower install purescript-unicode
 
 ## Module documentation
 
-- [Data.Char.Unicode](docs/Data/Char/Unicode.md)
+- [Data.Char.Unicode](https://pursuit.purescript.org/packages/purescript-unicode/docs/Data.Char.Unicode) on Pursuit
 
 ## Generate Internal module
 
