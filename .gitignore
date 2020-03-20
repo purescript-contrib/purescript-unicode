@@ -2,12 +2,22 @@
 !/.gitignore
 !/.github
 !/.travis.yml
-/bower_components/
-/node_modules/
-/output/
 
-/pursuit.json
+# Dependencies
+bower_components
+node_modules
+
+# Generated files
+output
+generated-docs
+
+# Lockfiles
+package-lock.json
+*.lock
+
+# Extra files
+pursuit.json
 
 # Release builds of the purescript compiler appear to be compiled with
-# profiling enabled.  This causes psc and friends to create these *.tix files.
+# profiling enabled. This causes psc and friends to create these *.tix files.
 *.tix
