@@ -4,7 +4,7 @@ This directory contains documentation for `unicode`. If you are interested in co
 
 ## Generating Internal Modules
 
-The [Data.Char.Unicode.Internal](src/Data/Char/Unicode/Internal.purs) module can be generated with the following command:
+The [Data.Char.Unicode.Internal](../src/Data/Char/Unicode/Internal.purs) module can be generated with the following command:
 
 ```sh
 $ wget 'http://www.unicode.org/Public/6.0.0/ucd/UnicodeData.txt'
