@@ -3,19 +3,45 @@ module Test.Data.Char.Unicode (dataCharUnicodeTests) where
 
 import Prelude
 
+import Control.Monad.Reader.Class (class MonadReader, ask, local)
 import Data.Char (fromCharCode)
 import Data.Char.Unicode (GeneralCategory(..), digitToInt, generalCategory, isAlpha, isAlphaNum, isAscii, isAsciiLower, isAsciiUpper, isControl, isDigit, isHexDigit, isLatin1, isLetter, isLower, isMark, isNumber, isOctDigit, isPrint, isPunctuation, isSeparator, isSpace, isSymbol, isUpper)
 import Data.Maybe (Maybe(..), fromJust)
+import Data.Monoid (power, guard)
 import Data.NonEmpty ((:|))
-import Effect.Class (liftEffect)
+import Effect.Console (log)
+import Effect.Class (class MonadEffect, liftEffect)
 import Partial.Unsafe (unsafePartial)
 import Test.QuickCheck (quickCheck)
 import Test.QuickCheck.Arbitrary (class Arbitrary)
 import Test.QuickCheck.Gen (Gen, oneOf, chooseInt)
-import Test.Spec (Spec, describe, it)
-import Test.Spec.Assertions (shouldEqual)
+-- import Test.Spec (Spec, describe, it)
+-- import Test.Spec.Assertions (shouldEqual)
+import Test.Assert (assertEqual)
 
-dataCharUnicodeTests :: Spec Unit
+
+-----------------------------------------------------------------
+
+-- Provide similar API to purescript-spec to reduce code changes
+
+describe :: forall m. MonadReader Int m => MonadEffect m => String -> m Unit -> m Unit
+describe msg runTest = do
+  indentation <- ask
+  let spacing = guard (indentation > 0) " "
+  liftEffect $ log $ (power ">>" indentation) <> spacing <> msg
+  local (_ + 1) runTest
+
+it :: forall m. MonadReader Int m => MonadEffect m => String -> m Unit -> m Unit
+it = describe
+
+shouldEqual :: forall m a. MonadEffect m => Eq a => Show a => a -> a -> m Unit
+shouldEqual actual expected =
+  liftEffect $ assertEqual { actual, expected }
+
+-----------------------------------------------------------------
+
+
+dataCharUnicodeTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 dataCharUnicodeTests = describe "module Data.Char.Unicode" do
     generalCategoryDataTypeTests
     generalCategoryTests
@@ -43,7 +69,7 @@ dataCharUnicodeTests = describe "module Data.Char.Unicode" do
     isNumberTests
     isSeparatorTests
 
-generalCategoryDataTypeTests :: Spec Unit
+generalCategoryDataTypeTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 generalCategoryDataTypeTests = describe "GeneralCategory instances" do
     describe "Eq instance" do
         it "UppercaseLetter == UppercaseLetter" $
@@ -62,7 +88,7 @@ generalCategoryDataTypeTests = describe "GeneralCategory instances" do
         it "top == NotAssigned" $
             top `shouldEqual` NotAssigned
 
-generalCategoryTests :: Spec Unit
+generalCategoryTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 generalCategoryTests = describe "generalCategory" do
     it "generalCategory 'a' == LowercaseLetter" $
         generalCategory 'a' `shouldEqual` Just LowercaseLetter
@@ -159,28 +185,28 @@ instance arbitrayNonAsciiHexDigit :: Arbitrary NonAsciiHexDigit where
         g :: Gen Int
         g = chooseInt 0 0x2F
 
-isAsciiTests :: Spec Unit
+isAsciiTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isAsciiTests = describe "isAscii" do
     it "ascii chars are ascii" $ liftEffect $ quickCheck \(AsciiChar char) -> isAscii char
     it "non ascii chars are not ascii" $ liftEffect $ quickCheck \(NonAsciiChar char) -> not $ isAscii char
 
-isLatin1Tests :: Spec Unit
+isLatin1Tests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isLatin1Tests = describe "isLatin1" do
     it "ascii chars are latin1" $ liftEffect $ quickCheck \(AsciiChar char) -> isLatin1 char
     it "latin1 chars are latin1" $ liftEffect $ quickCheck \(Latin1Char char) -> isLatin1 char
     it "non latin1 chars are not latin1" $ liftEffect $ quickCheck \(NonLatin1Char char) -> not $ isLatin1 char
 
-isAsciiLowerTests :: Spec Unit
+isAsciiLowerTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isAsciiLowerTests = describe "isAsciiLower" do
     it "lower ascii chars are lower ascii" $ liftEffect $ quickCheck \(AsciiLowerChar char) -> isAsciiLower char
     it "non lower ascii chars are not lower ascii" $ liftEffect $ quickCheck \(NonAsciiLowerChar char) -> not $ isAsciiLower char
 
-isAsciiUpperTests :: Spec Unit
+isAsciiUpperTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isAsciiUpperTests = describe "isAsciiUpper" do
     it "upper ascii chars are upper ascii" $ liftEffect $ quickCheck \(AsciiUpperChar char) -> isAsciiUpper char
     it "non upper ascii chars are not upper ascii" $ liftEffect $ quickCheck \(NonAsciiUpperChar char) -> not $ isAsciiUpper char
 
-isControlTests :: Spec Unit
+isControlTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isControlTests = describe "isControl" do
     -- DISABLED: "Illegal character escape code."
     -- it "'\\04' is Control" $
@@ -188,7 +214,7 @@ isControlTests = describe "isControl" do
     it "'a' is not Control" $
         isControl 'a' `shouldEqual` false
 
-isPrintTests :: Spec Unit
+isPrintTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isPrintTests = describe "isPrint" do
     -- DISABLED: "Illegal character escape code."
     -- it "'\\04' is not Print" $
@@ -200,7 +226,7 @@ isPrintTests = describe "isPrint" do
     it "' ' is Print" $
         isPrint ' ' `shouldEqual` true
 
-isSpaceTests :: Spec Unit
+isSpaceTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isSpaceTests = describe "isSpace" do
     it "' ' is Space" $
         isSpace ' ' `shouldEqual` true
@@ -213,7 +239,7 @@ isSpaceTests = describe "isSpace" do
     it "'a' is not Space" $
         isSpace 'a' `shouldEqual` false
 
-isUpperTests :: Spec Unit
+isUpperTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isUpperTests = describe "isUpper" do
     it "'Z' is Upper" $
         isUpper 'Z' `shouldEqual` true
@@ -226,7 +252,7 @@ isUpperTests = describe "isUpper" do
     it "'日' is not Upper" $
         isUpper '日' `shouldEqual` false
 
-isLowerTests :: Spec Unit
+isLowerTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isLowerTests = describe "isLower" do
     it "'a' is Lower" $
         isLower 'a' `shouldEqual` true
@@ -239,7 +265,7 @@ isLowerTests = describe "isLower" do
     it "'日' is not Lower" $
         isLower '日' `shouldEqual` false
 
-isAlphaTests :: Spec Unit
+isAlphaTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isAlphaTests = describe "isAlpha" do
     it "'a' is Alpha" $
         isAlpha 'a' `shouldEqual` true
@@ -252,7 +278,7 @@ isAlphaTests = describe "isAlpha" do
     it "'\\n' is not Alpha" $
         isAlpha '\n' `shouldEqual` false
 
-isAlphaNumTests :: Spec Unit
+isAlphaNumTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isAlphaNumTests = describe "isAlphaNum" do
     it "'a' is AlphaNum" $
         isAlphaNum 'a' `shouldEqual` true
@@ -271,22 +297,22 @@ isAlphaNumTests = describe "isAlphaNum" do
     it "'\\n' is not AlphaNum" $
         isAlphaNum '\n' `shouldEqual` false
 
-isDigitTests :: Spec Unit
+isDigitTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isDigitTests = describe "isDigit" do
     it "digits are digits" $ liftEffect $ quickCheck \(AsciiDigit char) -> isDigit char
     it "non digits are not digits" $ liftEffect $ quickCheck \(NonAsciiDigit char) -> not $ isDigit char
 
-isOctDigitTests :: Spec Unit
+isOctDigitTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isOctDigitTests = describe "isOctDigit" do
     it "oct digits are oct digits" $ liftEffect $ quickCheck \(AsciiOctDigit char) -> isOctDigit char
     it "non oct digits are not oct digits" $ liftEffect $ quickCheck \(NonAsciiOctDigit char) -> not $ isOctDigit char
 
-isHexDigitTests :: Spec Unit
+isHexDigitTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isHexDigitTests = describe "isHexDigit" do
     it "hex digits are hex digits" $ liftEffect $ quickCheck \(AsciiHexDigit char) -> isHexDigit char
     it "non hex digits are not hex digits" $ liftEffect $ quickCheck \(NonAsciiHexDigit char) -> not $ isHexDigit char
 
-isPunctuationTests :: Spec Unit
+isPunctuationTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isPunctuationTests = describe "isPunctuation" do
     it "'a' is not Punctuation" $
         isPunctuation 'a' `shouldEqual` false
@@ -303,7 +329,7 @@ isPunctuationTests = describe "isPunctuation" do
     it "'—' is Punctuation" $
         isPunctuation '—' `shouldEqual` true
 
-isSymbolTests :: Spec Unit
+isSymbolTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isSymbolTests = describe "isSymbol" do
     it "'a' is not Symbol" $
         isSymbol 'a' `shouldEqual` false
@@ -321,14 +347,14 @@ isSymbolTests = describe "isSymbol" do
         isSymbol '+' `shouldEqual` true
 
 -- TODO: These.
-toUpperTests :: Spec Unit
+toUpperTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 toUpperTests = pure unit
-toLowerTests :: Spec Unit
+toLowerTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 toLowerTests = pure unit
-toTitleTests :: Spec Unit
+toTitleTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 toTitleTests = pure unit
 
-digitToIntTests :: Spec Unit
+digitToIntTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 digitToIntTests = describe "digitToInt" do
     it "'0'..'9' get mapped correctly" $
         map digitToInt ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
@@ -346,11 +372,11 @@ digitToIntTests = describe "digitToInt" do
     it "'国' is not a digit" $
         digitToInt '国' `shouldEqual` Nothing
 
-isLetterTests:: Spec Unit
+isLetterTests:: forall m. MonadReader Int m => MonadEffect m => m Unit
 isLetterTests = describe "isLetter" do
     it "isLetter == isAlpha" $ liftEffect $ quickCheck \char -> isLetter char == isAlpha char
 
-isMarkTests :: Spec Unit
+isMarkTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isMarkTests = describe "isMark" do
     -- TODO: Add a positive test here.
     it "'a' is not Mark" $
@@ -362,7 +388,7 @@ isMarkTests = describe "isMark" do
     it "'♥' is not Mark" $
         isMark '♥' `shouldEqual` false
 
-isNumberTests :: Spec Unit
+isNumberTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isNumberTests = describe "isNumber" do
     it "'a' is not Number" $
         isNumber 'a' `shouldEqual` false
@@ -382,7 +408,7 @@ isNumberTests = describe "isNumber" do
         isNumber '⑳' `shouldEqual` true
     it "0..9 are Number" $ liftEffect $ quickCheck \(AsciiDigit char) -> isNumber char
 
-isSeparatorTests :: Spec Unit
+isSeparatorTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isSeparatorTests = describe "isSeparator" do
     it "'a' is not Separator" $
         isSeparator 'a' `shouldEqual` false

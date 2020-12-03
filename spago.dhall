@@ -1,13 +1,13 @@
 { name = "unicode"
 , dependencies =
-  [ "console"
+  [ "assert"
+  , "console"
   , "effect"
   , "foldable-traversable"
   , "maybe"
   , "psci-support"
   , "quickcheck"
   , "random"
-  , "spec"
   , "strings"
   ]
 , packages = ./packages.dhall
