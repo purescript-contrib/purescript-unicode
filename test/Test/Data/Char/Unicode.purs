@@ -15,8 +15,6 @@ import Partial.Unsafe (unsafePartial)
 import Test.QuickCheck (quickCheck)
 import Test.QuickCheck.Arbitrary (class Arbitrary)
 import Test.QuickCheck.Gen (Gen, oneOf, chooseInt)
--- import Test.Spec (Spec, describe, it)
--- import Test.Spec.Assertions (shouldEqual)
 import Test.Assert (assertEqual)
 
 
