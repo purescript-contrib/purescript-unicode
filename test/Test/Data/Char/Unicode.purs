@@ -6,6 +6,7 @@ import Prelude
 import Control.Monad.Reader.Class (class MonadReader, ask, local)
 import Data.Char (fromCharCode)
 import Data.Char.Unicode (GeneralCategory(..), decDigitToInt, hexDigitToInt, octDigitToInt, generalCategory, isAlpha, isAlphaNum, isAscii, isAsciiLower, isAsciiUpper, isControl, isDecDigit, isHexDigit, isLatin1, isLetter, isLower, isMark, isNumber, isOctDigit, isPrint, isPunctuation, isSeparator, isSpace, isSymbol, isUpper)
+import Data.Foldable (traverse_)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Monoid (power, guard)
 import Data.NonEmpty ((:|))
@@ -372,27 +373,21 @@ hexDigitToIntTests = describe "hexDigitToInt" do
     it "'A'..'F' get mapped correctly" $
         map hexDigitToInt ['A','B','C','D','E','F'] `shouldEqual`
             [Just 10, Just 11, Just 12, Just 13, Just 14, Just 15]
-    notDigit "hex" hexDigitToInt 'G'
-    notDigit "hex" hexDigitToInt '♥'
-    notDigit "hex" hexDigitToInt '国'
+    traverse_ (notDigit "hex" hexDigitToInt) ['g', 'G', '♥', '国']
 
 decDigitToIntTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 decDigitToIntTests = describe "decDigitToInt" do
     it "'0'..'9' get mapped correctly" $
         map decDigitToInt ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
             [Just 0, Just 1, Just 2, Just 3, Just 4, Just 5, Just 6, Just 7, Just 8, Just 9]
-    notDigit "dec" decDigitToInt 'a'
-    notDigit "dec" decDigitToInt '♥'
-    notDigit "dec" decDigitToInt '国'
+    traverse_ (notDigit "dec" decDigitToInt) ['a', 'A', '♥', '国']
 
 octDigitToIntTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 octDigitToIntTests = describe "octDigitToInt" do
     it "'0'..'7' get mapped correctly" $
         map octDigitToInt ['0','1','2','3','4','5','6','7'] `shouldEqual`
             [Just 0, Just 1, Just 2, Just 3, Just 4, Just 5, Just 6, Just 7]
-    notDigit "oct" octDigitToInt '8'
-    notDigit "oct" octDigitToInt '♥'
-    notDigit "oct" octDigitToInt '国'
+    traverse_ (notDigit "oct" octDigitToInt) ['8', '9', '♥', '国']
 
 isLetterTests:: forall m. MonadReader Int m => MonadEffect m => m Unit
 isLetterTests = describe "isLetter" do
