@@ -5,10 +5,10 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes (😱!!!):
-- Deprecation warnings for `isDigit` and `digitToInt` #25
+- Deprecation warnings for `isDigit` and `digitToInt` (#31 by @milesfrain)
 
 New features:
-- Added `hexDigitToInt` `decDigitToInt` `octDigitToInt` #25
+- Added `hexDigitToInt` `decDigitToInt` `octDigitToInt` (#31 by @milesfrain)
 
 Bugfixes:
 
