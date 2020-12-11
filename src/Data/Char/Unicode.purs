@@ -9,9 +9,9 @@ module Data.Char.Unicode
   , isAlpha
   , isAlphaNum
   , isLetter
+  , isHexDigit
   , isDecDigit
   , isOctDigit
-  , isHexDigit
   , isDigit -- Deprecated
   , isControl
   , isPrint
@@ -23,8 +23,9 @@ module Data.Char.Unicode
   , isNumber
 
 -- Conversion to Int
-  , decDigitToInt
   , hexDigitToInt
+  , decDigitToInt
+  , octDigitToInt
   , digitToInt -- Deprecated
 
   -- Case conversion
@@ -580,17 +581,28 @@ hexDigitToInt c = result
 -- | Nothing
 -- | ```
 decDigitToInt :: Char -> Maybe Int
-decDigitToInt c = result
-  where
-    result :: Maybe Int
-    result
-      | dec <= 9 && dec >= 0 = Just dec
-      | otherwise            = Nothing
+decDigitToInt c
+  | isDecDigit c = Just $ toCharCode c - toCharCode '0'
+  | otherwise    = Nothing
 
-    dec :: Int
-    dec = toCharCode c - toCharCode '0'
+-- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
+-- | satisfies `isOctDigit` (one of `0..7`). Anything else converts to `Nothing`
+-- |
+-- | ```
+-- | >>> import Data.Traversable
+-- |
+-- | >>> traverse octDigitToInt ['0','1','2','3','4','5','6','7']
+-- | (Just [0,1,2,3,4,5,6,7])
+-- |
+-- | >>> octDigitToInt '8'
+-- | Nothing
+-- | ```
+octDigitToInt :: Char -> Maybe Int
+octDigitToInt c
+  | isOctDigit c = Just $ toCharCode c - toCharCode '0'
+  | otherwise    = Nothing
 
-digitToInt :: Warn (Text "'digitToInt' is deprecated, use 'decDigitToInt' or 'hexDigitToInt' instead") => Char -> Maybe Int
+digitToInt :: Warn (Text "'digitToInt' is deprecated, use 'decDigitToInt', 'hexDigitToInt', or 'octDigitToInt' instead") => Char -> Maybe Int
 digitToInt = hexDigitToInt
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
