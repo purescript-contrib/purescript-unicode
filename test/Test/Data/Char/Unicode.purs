@@ -5,10 +5,12 @@ import Prelude
 
 import Control.Monad.Reader.Class (class MonadReader, ask, local)
 import Data.Char (fromCharCode)
-import Data.Char.Unicode (GeneralCategory(..), digitToInt, generalCategory, isAlpha, isAlphaNum, isAscii, isAsciiLower, isAsciiUpper, isControl, isDigit, isHexDigit, isLatin1, isLetter, isLower, isMark, isNumber, isOctDigit, isPrint, isPunctuation, isSeparator, isSpace, isSymbol, isUpper)
+import Data.Char.Unicode (GeneralCategory(..), decDigitToInt, hexDigitToInt, octDigitToInt, generalCategory, isAlpha, isAlphaNum, isAscii, isAsciiLower, isAsciiUpper, isControl, isDecDigit, isHexDigit, isLatin1, isLetter, isLower, isMark, isNumber, isOctDigit, isPrint, isPunctuation, isSeparator, isSpace, isSymbol, isUpper)
+import Data.Foldable (traverse_)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Monoid (power, guard)
 import Data.NonEmpty ((:|))
+import Data.String.CodeUnits (singleton)
 import Effect.Console (log)
 import Effect.Class (class MonadEffect, liftEffect)
 import Partial.Unsafe (unsafePartial)
@@ -53,15 +55,17 @@ dataCharUnicodeTests = describe "module Data.Char.Unicode" do
     isUpperTests
     isAlphaTests
     isAlphaNumTests
-    isDigitTests
-    isOctDigitTests
     isHexDigitTests
+    isDecDigitTests
+    isOctDigitTests
     isPunctuationTests
     isSymbolTests
     toUpperTests
     toLowerTests
     toTitleTests
-    digitToIntTests
+    hexDigitToIntTests
+    decDigitToIntTests
+    octDigitToIntTests
     isLetterTests
     isMarkTests
     isNumberTests
@@ -295,10 +299,10 @@ isAlphaNumTests = describe "isAlphaNum" do
     it "'\\n' is not AlphaNum" $
         isAlphaNum '\n' `shouldEqual` false
 
-isDigitTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
-isDigitTests = describe "isDigit" do
-    it "digits are digits" $ liftEffect $ quickCheck \(AsciiDigit char) -> isDigit char
-    it "non digits are not digits" $ liftEffect $ quickCheck \(NonAsciiDigit char) -> not $ isDigit char
+isDecDigitTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
+isDecDigitTests = describe "isDecDigit" do
+    it "digits are digits" $ liftEffect $ quickCheck \(AsciiDigit char) -> isDecDigit char
+    it "non digits are not digits" $ liftEffect $ quickCheck \(NonAsciiDigit char) -> not $ isDecDigit char
 
 isOctDigitTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isOctDigitTests = describe "isOctDigit" do
@@ -352,23 +356,38 @@ toLowerTests = pure unit
 toTitleTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 toTitleTests = pure unit
 
-digitToIntTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
-digitToIntTests = describe "digitToInt" do
+notDigit :: forall m. MonadReader Int m => MonadEffect m =>
+  String -> (Char -> Maybe Int) -> Char -> m Unit
+notDigit base func char =
+  it ("'" <> singleton char <> "' is not a " <> base <> " digit") $
+      func char `shouldEqual` Nothing
+
+hexDigitToIntTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
+hexDigitToIntTests = describe "hexDigitToInt" do
     it "'0'..'9' get mapped correctly" $
-        map digitToInt ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
+        map hexDigitToInt ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
             [Just 0, Just 1, Just 2, Just 3, Just 4, Just 5, Just 6, Just 7, Just 8, Just 9]
     it "'a'..'f' get mapped correctly" $
-        map digitToInt ['a','b','c','d','e','f'] `shouldEqual`
+        map hexDigitToInt ['a','b','c','d','e','f'] `shouldEqual`
             [Just 10, Just 11, Just 12, Just 13, Just 14, Just 15]
     it "'A'..'F' get mapped correctly" $
-        map digitToInt ['A','B','C','D','E','F'] `shouldEqual`
+        map hexDigitToInt ['A','B','C','D','E','F'] `shouldEqual`
             [Just 10, Just 11, Just 12, Just 13, Just 14, Just 15]
-    it "'G' is not a digit" $
-        digitToInt 'G' `shouldEqual` Nothing
-    it "'♥' is not a digit" $
-        digitToInt '♥' `shouldEqual` Nothing
-    it "'国' is not a digit" $
-        digitToInt '国' `shouldEqual` Nothing
+    traverse_ (notDigit "hex" hexDigitToInt) ['g', 'G', '♥', '国']
+
+decDigitToIntTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
+decDigitToIntTests = describe "decDigitToInt" do
+    it "'0'..'9' get mapped correctly" $
+        map decDigitToInt ['0','1','2','3','4','5','6','7','8','9'] `shouldEqual`
+            [Just 0, Just 1, Just 2, Just 3, Just 4, Just 5, Just 6, Just 7, Just 8, Just 9]
+    traverse_ (notDigit "dec" decDigitToInt) ['a', 'A', '♥', '国']
+
+octDigitToIntTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
+octDigitToIntTests = describe "octDigitToInt" do
+    it "'0'..'7' get mapped correctly" $
+        map octDigitToInt ['0','1','2','3','4','5','6','7'] `shouldEqual`
+            [Just 0, Just 1, Just 2, Just 3, Just 4, Just 5, Just 6, Just 7]
+    traverse_ (notDigit "oct" octDigitToInt) ['8', '9', '♥', '国']
 
 isLetterTests:: forall m. MonadReader Int m => MonadEffect m => m Unit
 isLetterTests = describe "isLetter" do
