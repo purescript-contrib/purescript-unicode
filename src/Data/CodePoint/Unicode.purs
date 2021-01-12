@@ -20,6 +20,7 @@ import Data.CodePoint.Unicode.Internal ( UnicodeCategory(..)
                                        )
 import Data.Maybe (Maybe(..))
 import Unsafe.Coerce (unsafeCoerce)
+import Prim.TypeError (class Warn, Text)
 
 modify :: (Int -> Int) -> (CodePoint -> CodePoint)
 modify f = unsafeCoerce
@@ -368,9 +369,9 @@ isAlpha = uIswalpha <<< fromEnum
 isAlphaNum :: CodePoint -> Boolean
 isAlphaNum = uIswalnum <<< fromEnum
 
--- | Selects ASCII digits, i.e. `0..9`.
-isDigit :: CodePoint -> Boolean
-isDigit c = let diff = (fromEnum c - toCharCode '0')
+-- | Selects ASCII decimal digits, i.e. `0..9`.
+isDecDigit :: CodePoint -> Boolean
+isDecDigit c = let diff = (fromEnum c - toCharCode '0')
             in diff <= 9 && diff >= 0
 
 -- | Selects ASCII octal digits, i.e. `0..7`.
@@ -381,9 +382,12 @@ isOctDigit c = let diff = (fromEnum c - toCharCode '0')
 -- | Selects ASCII hexadecimal digits,
 -- | i.e. `0..9, A..F, a..f`.
 isHexDigit :: CodePoint -> Boolean
-isHexDigit c = isDigit c
+isHexDigit c = isDecDigit c
             || (let diff = (fromEnum c - toCharCode 'A') in diff <= 5 && diff >= 0)
             || (let diff = (fromEnum c - toCharCode 'a') in diff <= 5 && diff >= 0)
+
+isDigit :: Warn (Text "'isDigit' is deprecated, use 'isDecDigit', 'isHexDigit', or 'isOctDigit' instead") => CodePoint -> Boolean
+isDigit = isDecDigit
 
 -- | Selects Unicode punctuation characters, including various kinds
 -- | of connectors, brackets and quotes.
@@ -498,29 +502,32 @@ toLower = modify uTowlower
 toTitle :: CodePoint -> CodePoint
 toTitle = modify uTowtitle
 
--- | Convert a single digit `CodePoint` to the corresponding `Just Int` if its argument
--- | satisfies `isHexDigit`, if it is one of `0..9, A..F, a..f`. Anything else
--- | converts to `Nothing`
--- |
--- | Fixme: example should be updated to use CodePoints
+-- | We define this via the FFI because we want to avoid the
+-- | dictionary overhead of going via Enum, and because we're certain
+-- | that the Unicode table we used to generate these conversions
+-- | doesn't generate char codes outside the valid range.
+foreign import withCharCode :: (Int -> Int) -> Char -> Char
+
+-- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
+-- | satisfies `isHexDigit` (one of `0..9, A..F, a..f`). Anything else converts to `Nothing`
 -- |
 -- | ```
 -- | >>> import Data.Traversable
 -- |
--- | >>> traverse (digitToInt <<< codePointFromChar) ['0','1','2','3','4','5','6','7','8','9']
+-- | >>> traverse hexDigitToInt ['0','1','2','3','4','5','6','7','8','9']
 -- | (Just [0,1,2,3,4,5,6,7,8,9])
 -- |
--- | >>> traverse (digitToInt <<< codePointFromChar) ['a','b','c','d','e','f']
+-- | >>> traverse hexDigitToInt ['a','b','c','d','e','f']
 -- | (Just [10,11,12,13,14,15])
 -- |
--- | >>> traverse (digitToInt <<< codePointFromChar) ['A','B','C','D','E','F']
+-- | >>> traverse hexDigitToInt ['A','B','C','D','E','F']
 -- | (Just [10,11,12,13,14,15])
 -- |
--- | >>> digitToInt (codePointFromChar 'G')
+-- | >>> hexDigitToInt 'G'
 -- | Nothing
 -- | ```
-digitToInt :: CodePoint -> Maybe Int
-digitToInt c = result
+hexDigitToInt :: CodePoint -> Maybe Int
+hexDigitToInt c = result
   where
     result :: Maybe Int
     result
@@ -537,6 +544,43 @@ digitToInt c = result
 
     hexUpper :: Int
     hexUpper = fromEnum c - toCharCode 'A'
+
+-- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
+-- | satisfies `isDecDigit` (one of `0..9`). Anything else converts to `Nothing`
+-- |
+-- | ```
+-- | >>> import Data.Traversable
+-- |
+-- | >>> traverse decDigitToInt ['0','1','2','3','4','5','6','7','8','9']
+-- | (Just [0,1,2,3,4,5,6,7,8,9])
+-- |
+-- | >>> decDigitToInt 'a'
+-- | Nothing
+-- | ```
+decDigitToInt :: CodePoint -> Maybe Int
+decDigitToInt c
+  | isDecDigit c = Just $ fromEnum c - toCharCode '0'
+  | otherwise    = Nothing
+
+-- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
+-- | satisfies `isOctDigit` (one of `0..7`). Anything else converts to `Nothing`
+-- |
+-- | ```
+-- | >>> import Data.Traversable
+-- |
+-- | >>> traverse octDigitToInt ['0','1','2','3','4','5','6','7']
+-- | (Just [0,1,2,3,4,5,6,7])
+-- |
+-- | >>> octDigitToInt '8'
+-- | Nothing
+-- | ```
+octDigitToInt :: CodePoint -> Maybe Int
+octDigitToInt c
+  | isOctDigit c = Just $ fromEnum c - toCharCode '0'
+  | otherwise    = Nothing
+
+digitToInt :: Warn (Text "'digitToInt' is deprecated, use 'decDigitToInt', 'hexDigitToInt', or 'octDigitToInt' instead") => CodePoint -> Maybe Int
+digitToInt = hexDigitToInt
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- | title-case letters, plus letters of caseless scripts and

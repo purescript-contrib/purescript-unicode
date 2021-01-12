@@ -1,11 +1,11 @@
 module Test.Main where
 
 import Prelude
+
+import Control.Monad.Reader.Trans (runReaderT)
 import Effect (Effect)
 import Test.Data.CodePoint.Unicode (dataCharUnicodeTests)
-import Test.Spec.Reporter.Console (consoleReporter)
-import Test.Spec.Runner (run)
 
 main :: Effect Unit
-main = run [consoleReporter] $
-    dataCharUnicodeTests
+main =
+  runReaderT dataCharUnicodeTests 0
