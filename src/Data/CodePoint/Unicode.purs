@@ -3,27 +3,13 @@ module Data.CodePoint.Unicode where
 import Prelude
 
 import Data.Char (toCharCode)
-import Data.String.CodePoints (CodePoint, codePointFromChar)
+import Data.CodePoint.Unicode.Casing as Casing
+import Data.CodePoint.Unicode.Internal (UnicodeCategory(..), uTowtitle, uTowlower, uTowupper, uIswalnum, uIswalpha, uIswlower, uIswupper, uIswspace, uIswprint, uIswcntrl, uGencat)
 import Data.Enum (fromEnum)
-import Data.CodePoint.Unicode.Internal ( UnicodeCategory(..)
-                                       , uTowtitle
-                                       , uTowlower
-                                       , uTowupper
-                                       , uIswalnum
-                                       , uIswalpha
-                                       , uIswlower
-                                       , uIswupper
-                                       , uIswspace
-                                       , uIswprint
-                                       , uIswcntrl
-                                       , uGencat
-                                       )
 import Data.Maybe (Maybe(..))
-import Unsafe.Coerce (unsafeCoerce)
+import Data.String.CodePoints (CodePoint, codePointFromChar)
 import Prim.TypeError (class Warn, Text)
-
-modify :: (Int -> Int) -> (CodePoint -> CodePoint)
-modify = unsafeCoerce
+import Unsafe.Coerce (unsafeCoerce)
 
 -- | Unicode General Categories (column 2 of the UnicodeData table) in
 -- | the order they are listed in the Unicode standard (the Unicode
@@ -485,22 +471,50 @@ isSymbol c =
         Just OtherSymbol             -> true
         _                            -> false
 
--- | Convert a letter to the corresponding upper-case letter, if any.
+-- | Convert a code point to the corresponding upper-case sequence of code points.
 -- | Any other character is returned unchanged.
-toUpper :: CodePoint -> CodePoint
-toUpper = modify uTowupper
+toUpper :: CodePoint -> Array CodePoint
+toUpper = modifyFull Casing.upper
 
--- | Convert a letter to the corresponding lower-case letter, if any.
+-- | Convert a code point to the corresponding lower-case sequence of code points.
 -- | Any other character is returned unchanged.
-toLower :: CodePoint -> CodePoint
-toLower = modify uTowlower
+toLower :: CodePoint -> Array CodePoint
+toLower = modifyFull Casing.lower
 
--- | Convert a letter to the corresponding title-case or upper-case
--- | letter, if any.  (Title case differs from upper case only for a small
--- | number of ligature letters.)
+-- | Convert a code point to the corresponding title-case or upper-case
+-- | sequence of code points.  (Title case differs from upper case only for a
+-- | small number of ligature characters.)
 -- | Any other character is returned unchanged.
-toTitle :: CodePoint -> CodePoint
-toTitle = modify uTowtitle
+toTitle :: CodePoint -> Array CodePoint
+toTitle = modifyFull Casing.title
+
+-- | Convert a code point to the corresponding case-folded sequence of code
+-- | points, for implementing caseless matching.
+-- | Any other character is returned unchanged.
+caseFold :: CodePoint -> Array CodePoint
+caseFold = modifyFull Casing.foldFull
+
+-- | Convert a code point to the corresponding upper-case code point, if any.
+-- | Any other character is returned unchanged.
+toUpperSimple :: CodePoint -> CodePoint
+toUpperSimple = modify uTowupper
+
+-- | Convert a code point to the corresponding lower-case code point, if any.
+-- | Any other character is returned unchanged.
+toLowerSimple :: CodePoint -> CodePoint
+toLowerSimple = modify uTowlower
+
+-- | Convert a code point to the corresponding title-case or upper-case
+-- | code point, if any.  (Title case differs from upper case only for a small
+-- | number of ligature characters.)
+-- | Any other character is returned unchanged.
+toTitleSimple :: CodePoint -> CodePoint
+toTitleSimple = modify uTowtitle
+
+-- | Convert a code point to the corresponding case-folded code point.
+-- | Any other character is returned unchanged.
+caseFoldSimple :: CodePoint -> CodePoint
+caseFoldSimple = modify Casing.fold
 
 -- | We define this via the FFI because we want to avoid the
 -- | dictionary overhead of going via Enum, and because we're certain
@@ -786,3 +800,10 @@ isSeparator c =
         Just LineSeparator           -> true
         Just ParagraphSeparator      -> true
         _                            -> false
+
+-- Helper functions
+modify :: (Int -> Int) -> (CodePoint -> CodePoint)
+modify = unsafeCoerce
+
+modifyFull :: (Int -> Array Int) -> (CodePoint -> Array CodePoint)
+modifyFull = unsafeCoerce

@@ -9,7 +9,7 @@ import Data.Enum (toEnumWithDefaults)
 import Data.Maybe (Maybe(..))
 import Data.Monoid (power, guard)
 import Data.String (CodePoint, codePointFromChar)
-import Data.String.Unicode (toLower, toLowerFull, toUpper, toUpperFull)
+import Data.String.Unicode (toLowerSimple, toLower, toUpperSimple, toUpper)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Console (log)
 import Test.Assert (assertEqual)
@@ -346,21 +346,21 @@ isSymbolTests = describe "isSymbol" do
         isSymbol (codePointFromChar '+') `shouldEqual` true
 
 toUpperTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
-toUpperTests = describe "toUpper && toUpperFull" do
+toUpperTests = describe "toUpperSimple && toUpper" do
     let accente = "\xE9"
     let accentE = "\xC9"
     it "should handle precomposed e with accent \xE9 -> \xC9" do
+        toUpperSimple accente `shouldEqual` accentE
         toUpper accente `shouldEqual` accentE
-        toUpperFull accente `shouldEqual` accentE
     it "should not affect emoji" do
         let emoji = "😃🧘🏻‍♂️🌍🍞🚗📞🎉♥️🏁"
+        toUpperSimple emoji `shouldEqual` emoji
         toUpper emoji `shouldEqual` emoji
-        toUpperFull emoji `shouldEqual` emoji
     -- for testing rules that only apply to the full algorithm
     let
       justFull lower upper = do
-        toUpper lower `shouldEqual` lower
-        toUpperFull lower `shouldEqual` upper
+        toUpperSimple lower `shouldEqual` lower
+        toUpper lower `shouldEqual` upper
     it "should map eszett correctly (ß -> SS)" do
         "ß" `justFull` "SS"
     it "should map ligatures (ﬀ, ﬄ) correctly" do
@@ -375,38 +375,38 @@ toUpperTests = describe "toUpper && toUpperFull" do
         -- GREEK SMALL LETTER UPSILON WITH PSILI AND VARIA
         "\x1F52" `justFull` "\x03A5\x0313\x0300"
         -- GREEK SMALL LETTER ALPHA WITH PSILI AND YPOGEGRAMMENI
-        toUpper "\x1F80" `shouldEqual` "\x1F88"
-        toUpperFull "\x1F80" `shouldEqual` "\x1F08\x0399"
+        toUpperSimple "\x1F80" `shouldEqual` "\x1F88"
+        toUpper "\x1F80" `shouldEqual` "\x1F08\x0399"
     it "should have no context sensitive matches" do
         -- Lithuanian retains the dot in a lowercase i when followed by accents.
-        toUpperFull "i\x0307" `shouldEqual` "I\x0307"
+        toUpper "i\x0307" `shouldEqual` "I\x0307"
         -- When uppercasing, i turns into a dotted capital I
-        toUpperFull "i" `shouldEqual` "I"
+        toUpper "i" `shouldEqual` "I"
 toLowerTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 toLowerTests = describe "toLower" do
     let accente = "\xE9"
     let accentE = "\xC9"
     it "should handle precomposed E with accent \xC9 -> \xE9" do
+        toLowerSimple accentE `shouldEqual` accente
         toLower accentE `shouldEqual` accente
-        toLowerFull accentE `shouldEqual` accente
     it "should not affect emoji" do
         let emoji = "😃🧘🏻‍♂️🌍🍞🚗📞🎉♥️🏁"
+        toLowerSimple emoji `shouldEqual` emoji
         toLower emoji `shouldEqual` emoji
-        toLowerFull emoji `shouldEqual` emoji
     let dot = "\x0307"
     let dotI = "\x0130" -- composed
     it "should handle precomposed and decomposed I with dot" do
+        toLowerSimple ("I"<>dot) `shouldEqual` ("i"<>dot) -- decomposed
         toLower ("I"<>dot) `shouldEqual` ("i"<>dot) -- decomposed
-        toLowerFull ("I"<>dot) `shouldEqual` ("i"<>dot) -- decomposed
-        toLower dotI `shouldEqual` "i" -- composed -> ASCII i
-        toLowerFull dotI `shouldEqual` ("i"<>dot) -- composed -> decomposed
+        toLowerSimple dotI `shouldEqual` "i" -- composed -> ASCII i
+        toLower dotI `shouldEqual` ("i"<>dot) -- composed -> decomposed
     it "should handle Greek characters with iota subscript" do
         -- GREEK CAPITAL LETTER ALPHA WITH PSILI AND PROSGEGRAMMENI
+        toLowerSimple "\x1F88" `shouldEqual` "\x1F80"
         toLower "\x1F88" `shouldEqual` "\x1F80"
-        toLowerFull "\x1F88" `shouldEqual` "\x1F80"
     it "should have no context sensitive matches" do
         -- GREEK CAPITAL LETTER SIGMA
-        toLowerFull "\x03A3" `shouldEqual` "\x03C3"
+        toLower "\x03A3" `shouldEqual` "\x03C3"
 toTitleTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 toTitleTests = pure unit
 
