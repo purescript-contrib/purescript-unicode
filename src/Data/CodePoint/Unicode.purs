@@ -23,7 +23,7 @@ import Unsafe.Coerce (unsafeCoerce)
 import Prim.TypeError (class Warn, Text)
 
 modify :: (Int -> Int) -> (CodePoint -> CodePoint)
-modify f = unsafeCoerce
+modify = unsafeCoerce
 
 -- | Unicode General Categories (column 2 of the UnicodeData table) in
 -- | the order they are listed in the Unicode standard (the Unicode
