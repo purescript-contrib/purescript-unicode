@@ -28,9 +28,9 @@ import Unsafe.Coerce (unsafeCoerce)
 -- |
 -- | ```
 -- | >>> UppercaseLetter == UppercaseLetter
--- | True
+-- | true
 -- | >>> UppercaseLetter == LowercaseLetter
--- | False
+-- | false
 -- | ```
 -- |
 -- | `Ord` instance:
@@ -317,7 +317,7 @@ isControl = uIswcntrl <<< fromEnum
 isPrint :: CodePoint -> Boolean
 isPrint = uIswprint <<< fromEnum
 
--- | Returns `True` for any Unicode space character, and the control
+-- | Returns `true` for any Unicode space character, and the control
 -- | characters `\t`, `\n`, `\r`, `\f`, `\v`.
 -- |
 -- | `isSpace` includes non-breaking space.
@@ -528,16 +528,16 @@ foreign import withCharCode :: (Int -> Int) -> Char -> Char
 -- | ```
 -- | >>> import Data.Traversable
 -- |
--- | >>> traverse hexDigitToInt ['0','1','2','3','4','5','6','7','8','9']
+-- | >>> traverse (hexDigitToInt <<< codePointFromChar) ['0','1','2','3','4','5','6','7','8','9']
 -- | (Just [0,1,2,3,4,5,6,7,8,9])
 -- |
--- | >>> traverse hexDigitToInt ['a','b','c','d','e','f']
+-- | >>> traverse (hexDigitToInt <<< codePointFromChar) ['a','b','c','d','e','f']
 -- | (Just [10,11,12,13,14,15])
 -- |
--- | >>> traverse hexDigitToInt ['A','B','C','D','E','F']
+-- | >>> traverse (hexDigitToInt <<< codePointFromChar) ['A','B','C','D','E','F']
 -- | (Just [10,11,12,13,14,15])
 -- |
--- | >>> hexDigitToInt 'G'
+-- | >>> hexDigitToInt (codePointFromChar 'G')
 -- | Nothing
 -- | ```
 hexDigitToInt :: CodePoint -> Maybe Int
@@ -598,11 +598,10 @@ digitToInt = hexDigitToInt
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- | title-case letters, plus letters of caseless scripts and
--- | modifiers letters). This function is equivalent to
--- | `Data.Char.isAlpha`.
+-- | modifiers letters).
 -- |
--- | This function returns `True` if its argument has one of the
--- | following `GeneralCategory`s, or `False` otherwise:
+-- | This function returns `true` if its argument has one of the
+-- | following `GeneralCategory`s, or `false` otherwise:
 -- |
 -- | - `UppercaseLetter`
 -- | - `LowercaseLetter`
@@ -630,18 +629,18 @@ digitToInt = hexDigitToInt
 -- | false
 -- | >>> isLetter (codePointFromChar '♥')
 -- | false
--- | >>> isLetter (codePointFromChar '\31')
+-- | >>> isLetter (codePointFromChar '\x1F')
 -- | false
 -- | ```
 -- |
 -- | Ensure that 'isLetter' and 'isAlpha' are equivalent.
 -- |
 -- | ```
--- | >>> chars = enumFromTo bottom top
+-- | >>> chars = enumFromTo bottom top :: Array CodePoint
 -- | >>> letters = map isLetter chars
 -- | >>> alphas = map isAlpha chars
 -- | >>> letters == alphas
--- | True
+-- | true
 -- | ```
 isLetter :: CodePoint -> Boolean
 isLetter c =
@@ -732,7 +731,7 @@ isMark c =
 -- | ASCII @\'0\'@ through @\'9\'@ are all numbers:
 -- |
 -- | ```
--- | >>> and $ map (isNumber <<< codePointFromChar) ['0'..'9']
+-- | >>> and $ map (isNumber <<< codePointFromChar) (enumFromTo '0' '9' :: Array Char)
 -- | true
 -- | ```
 -- |
@@ -775,6 +774,8 @@ isNumber c =
 -- | false
 -- | >>> isSeparator (codePointFromChar ' ')
 -- | true
+-- | >>> isSeparator (codePointFromChar '-')
+-- | false
 -- | ```
 -- |
 -- | Warning: newlines and tab characters are not considered
@@ -790,7 +791,7 @@ isNumber c =
 -- | But some more exotic characters are (like HTML's @&nbsp;@):
 -- |
 -- | ```
--- | >>> isSeparator (codePointFromChar '\160')
+-- | >>> isSeparator (codePointFromChar '\xA0')
 -- | true
 -- | ```
 isSeparator :: CodePoint -> Boolean
