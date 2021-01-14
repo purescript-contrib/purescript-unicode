@@ -1,4 +1,49 @@
-module Data.CodePoint.Unicode where
+module Data.CodePoint.Unicode
+  ( -- Predicates
+    isAscii
+  , isAsciiLower
+  , isAsciiUpper
+  , isLatin1
+  , isLower
+  , isUpper
+  , isAlpha
+  , isAlphaNum
+  , isLetter
+  , isDigit
+  , isDecDigit
+  , isOctDigit
+  , isHexDigit
+  , isControl
+  , isPrint
+  , isSpace
+  , isSymbol
+  , isSeparator
+  , isPunctuation
+  , isMark
+  , isNumber
+
+  , digitToInt
+  , hexDigitToInt
+  , decDigitToInt
+  , octDigitToInt
+
+  -- Case conversion
+  , toLower
+  , toUpper
+  , toTitle
+  , caseFold
+  , toLowerSimple
+  , toUpperSimple
+  , toTitleSimple
+  , caseFoldSimple
+
+  -- Unicode General Categories
+  , GeneralCategory(..)
+  , unicodeCatToGeneralCat
+  , generalCatToInt
+  , generalCatToUnicodeCat
+  , generalCategory
+  ) where
 
 import Prelude
 
@@ -515,12 +560,6 @@ toTitleSimple = modify uTowtitle
 -- | Any other character is returned unchanged.
 caseFoldSimple :: CodePoint -> CodePoint
 caseFoldSimple = modify Casing.fold
-
--- | We define this via the FFI because we want to avoid the
--- | dictionary overhead of going via Enum, and because we're certain
--- | that the Unicode table we used to generate these conversions
--- | doesn't generate char codes outside the valid range.
-foreign import withCharCode :: (Int -> Int) -> Char -> Char
 
 -- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
 -- | satisfies `isHexDigit` (one of `0..9, A..F, a..f`). Anything else converts to `Nothing`

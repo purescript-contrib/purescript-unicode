@@ -1,4 +1,12 @@
-module Data.String.Unicode where
+module Data.String.Unicode
+  ( toUpper
+  , toLower
+  , caseFold
+  , caselessMatch
+  , toUpperSimple
+  , toLowerSimple
+  , caseFoldSimple
+  ) where
 
 import Prelude
 
