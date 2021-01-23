@@ -9,7 +9,7 @@ import Data.Char.Unicode (GeneralCategory(..), decDigitToInt, hexDigitToInt, oct
 import Data.Foldable (traverse_)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Monoid (power, guard)
-import Data.NonEmpty ((:|))
+import Data.Array.NonEmpty (cons')
 import Data.String.CodeUnits (singleton)
 import Effect.Console (log)
 import Effect.Class (class MonadEffect, liftEffect)
@@ -19,9 +19,7 @@ import Test.QuickCheck.Arbitrary (class Arbitrary)
 import Test.QuickCheck.Gen (Gen, oneOf, chooseInt)
 import Test.Assert (assertEqual)
 
-
 -----------------------------------------------------------------
-
 -- Provide similar API to purescript-spec to reduce code changes
 
 describe :: forall m. MonadReader Int m => MonadEffect m => String -> m Unit -> m Unit
@@ -39,7 +37,6 @@ shouldEqual actual expected =
   liftEffect $ assertEqual { actual, expected }
 
 -----------------------------------------------------------------
-
 
 dataCharUnicodeTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 dataCharUnicodeTests = describe "module Data.Char.Unicode" do
@@ -135,7 +132,7 @@ instance arbitrayAsciiLowerChar :: Arbitrary AsciiLowerChar where
 
 newtype NonAsciiLowerChar = NonAsciiLowerChar Char
 instance arbitrayNonAsciiLowerChar :: Arbitrary NonAsciiLowerChar where
-    arbitrary = NonAsciiLowerChar <<< unsafeFromCharCode <$> oneOf (g :| [g , chooseInt 0x7B 0xFFFF])
+    arbitrary = NonAsciiLowerChar <<< unsafeFromCharCode <$> oneOf (cons' g [g , chooseInt 0x7B 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x60
@@ -146,7 +143,7 @@ instance arbitrayAsciiUpperChar :: Arbitrary AsciiUpperChar where
 
 newtype NonAsciiUpperChar = NonAsciiUpperChar Char
 instance arbitrayNonAsciiUpperChar :: Arbitrary NonAsciiUpperChar where
-    arbitrary = NonAsciiUpperChar <<< unsafeFromCharCode <$> oneOf (g :| [g , chooseInt 0x5B 0xFFFF])
+    arbitrary = NonAsciiUpperChar <<< unsafeFromCharCode <$> oneOf (cons' g [g , chooseInt 0x5B 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x40
@@ -157,7 +154,7 @@ instance arbitrayAsciiDigit :: Arbitrary AsciiDigit where
 
 newtype NonAsciiDigit = NonAsciiDigit Char
 instance arbitrayNonAsciiDigit :: Arbitrary NonAsciiDigit where
-    arbitrary = NonAsciiDigit <<< unsafeFromCharCode <$> oneOf (g :| [g , chooseInt 0x3A 0xFFFF])
+    arbitrary = NonAsciiDigit <<< unsafeFromCharCode <$> oneOf (cons' g [g , chooseInt 0x3A 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
@@ -168,21 +165,21 @@ instance arbitrayAsciiOctDigit :: Arbitrary AsciiOctDigit where
 
 newtype NonAsciiOctDigit = NonAsciiOctDigit Char
 instance arbitrayNonAsciiOctDigit :: Arbitrary NonAsciiOctDigit where
-    arbitrary = NonAsciiOctDigit <<< unsafeFromCharCode <$> oneOf (g :| [g , chooseInt 0x38 0xFFFF])
+    arbitrary = NonAsciiOctDigit <<< unsafeFromCharCode <$> oneOf (cons' g [g , chooseInt 0x38 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
 
 newtype AsciiHexDigit = AsciiHexDigit Char
 instance arbitrayAsciiHexDigit :: Arbitrary AsciiHexDigit where
-    arbitrary = AsciiHexDigit <<< unsafeFromCharCode <$> oneOf (g :| [g, chooseInt 0x41 0x46, chooseInt 0x61 0x66])
+    arbitrary = AsciiHexDigit <<< unsafeFromCharCode <$> oneOf (cons' g [g, chooseInt 0x41 0x46, chooseInt 0x61 0x66])
       where
         g :: Gen Int
         g = chooseInt 0x30 0x37
 
 newtype NonAsciiHexDigit = NonAsciiHexDigit Char
 instance arbitrayNonAsciiHexDigit :: Arbitrary NonAsciiHexDigit where
-    arbitrary = NonAsciiHexDigit <<< unsafeFromCharCode <$> oneOf (g :| [g, chooseInt 0x3A 0x40, chooseInt 0x4A 0x60, chooseInt 0x67 0xFFFF])
+    arbitrary = NonAsciiHexDigit <<< unsafeFromCharCode <$> oneOf (cons' g [g, chooseInt 0x3A 0x40, chooseInt 0x4A 0x60, chooseInt 0x67 0xFFFF])
       where
         g :: Gen Int
         g = chooseInt 0 0x2F
