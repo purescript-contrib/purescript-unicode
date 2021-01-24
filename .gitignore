@@ -8,9 +8,10 @@ output
 generated-docs
 bower_components
 
-UnicodeData\.txt
+UnicodeData.txt
 CaseFolding.txt
 SpecialCasing.txt
+
 node_modules
 package-lock.json
 *.lock
