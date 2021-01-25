@@ -24,7 +24,7 @@ import Data.String (CodePoint, fromCodePointArray, toCodePointArray)
 -- | Because this matches on more rules, it may be slower than `toUpperSimple`,
 -- | but it provides more correct results.
 toUpper :: String -> String
-toUpper = convFull CP.toUpper
+toUpper = convertFull CP.toUpper
 
 -- | Convert each code point in the string to its corresponding lower
 -- | sequence. This is the full (locale-independent) Unicode algorithm,
@@ -34,12 +34,12 @@ toUpper = convFull CP.toUpper
 -- | Because this matches on more rules, it may be slower than `toLowerSimple`,
 -- | but it provides more correct results.
 toLower :: String -> String
-toLower = convFull CP.toLower
+toLower = convertFull CP.toLower
 
 -- | The full Unicode case folding algorithm, may increase the length of the
 -- | string by mapping individual code points to longer sequences.
 caseFold :: String -> String
-caseFold = convFull CP.caseFold
+caseFold = convertFull CP.caseFold
 
 -- | Caseless matching, based on `caseFold`.
 caselessMatch :: String -> String -> Boolean
@@ -52,21 +52,21 @@ caselessMatch s1 s2 = caseFold s1 == caseFold s2
 -- |
 -- | Note: this is not the full Unicode algorithm, see `toUpper`.
 toUpperSimple :: String -> String
-toUpperSimple = conv CP.toUpperSimple
+toUpperSimple = convert CP.toUpperSimple
 
 -- | Convert each code point in the string to its corresponding lowercase
 -- | code point. This will preserve the number of code points in the string.
 -- |
 -- | Note: this is not the full Unicode algorithm, see `toLower`.
 toLowerSimple :: String -> String
-toLowerSimple = conv CP.toLowerSimple
+toLowerSimple = convert CP.toLowerSimple
 
 -- | Convert each code point in the string to its corresponding case-folded
 -- | code point. This will preserve the number of code points in the string.
 -- |
 -- | Note: this is not the full Unicode algorithm, see `caseFold`.
 caseFoldSimple :: String -> String
-caseFoldSimple = conv CP.caseFoldSimple
+caseFoldSimple = convert CP.caseFoldSimple
 
 -- Helper functions
 convert :: (CodePoint -> CodePoint) -> String -> String
