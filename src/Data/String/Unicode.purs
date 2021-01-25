@@ -13,7 +13,6 @@ import Prelude
 import Control.Bind (bindFlipped)
 import Data.CodePoint.Unicode as CP
 import Data.String (CodePoint, fromCodePointArray, toCodePointArray)
-import Unsafe.Coerce (unsafeCoerce)
 
 -- Full Unicode conversions
 
@@ -22,8 +21,8 @@ import Unsafe.Coerce (unsafeCoerce)
 -- | and may map single code points to more than one code point. For example,
 -- | `toUpper "ß" == "SS"`.
 -- |
--- | Because this matches on more rules, it may be slower than `toUpper`, but it
--- | provides more correct results.
+-- | Because this matches on more rules, it may be slower than `toUpperSimple`,
+-- | but it provides more correct results.
 toUpper :: String -> String
 toUpper = convFull CP.toUpper
 
@@ -32,8 +31,8 @@ toUpper = convFull CP.toUpper
 -- | and may map single code points to more than one code point. For example,
 -- | `toLower "\x0130" == "\x0069\x0307"`.
 -- |
--- | Because this matches on more rules, it may be slower than `toLower`, but it
--- | provides more correct results.
+-- | Because this matches on more rules, it may be slower than `toLowerSimple`,
+-- | but it provides more correct results.
 toLower :: String -> String
 toLower = convFull CP.toLower
 
@@ -66,21 +65,7 @@ toLowerSimple = conv CP.toLowerSimple
 caseFoldSimple :: String -> String
 caseFoldSimple = conv CP.caseFoldSimple
 
--- | Convert a letter to the corresponding title-case or upper-case
--- | letter, if any.  (Title case differs from upper case only for a small
--- | number of ligature letters.)
--- | Any other character is returned unchanged.
---toTitle :: CodePoint -> CodePoint
---toTitle = conv CP.toTitle
-
 -- Helper functions
-
-modify :: (Int -> Int) -> (CodePoint -> CodePoint)
-modify = unsafeCoerce
-
-modifyFull :: (Int -> Array Int) -> (CodePoint -> Array CodePoint)
-modifyFull = unsafeCoerce
-
 convert :: (CodePoint -> CodePoint) -> String -> String
 convert f = toCodePointArray >>> map f >>> fromCodePointArray
 
