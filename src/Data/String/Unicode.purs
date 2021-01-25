@@ -81,8 +81,8 @@ modify = unsafeCoerce
 modifyFull :: (Int -> Array Int) -> (CodePoint -> Array CodePoint)
 modifyFull = unsafeCoerce
 
-conv :: (CodePoint -> CodePoint) -> String -> String
-conv f = toCodePointArray >>> map f >>> fromCodePointArray
+convert :: (CodePoint -> CodePoint) -> String -> String
+convert f = toCodePointArray >>> map f >>> fromCodePointArray
 
-convFull :: (CodePoint -> Array CodePoint) -> String -> String
-convFull f = toCodePointArray >>> bindFlipped f >>> fromCodePointArray
+convertFull :: (CodePoint -> Array CodePoint) -> String -> String
+convertFull f = toCodePointArray >>> bindFlipped f >>> fromCodePointArray
