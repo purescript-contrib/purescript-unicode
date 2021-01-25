@@ -48,20 +48,23 @@ caselessMatch s1 s2 = caseFold s1 == caseFold s2
 -- Simple code-point-to-code-point conversion algorithms
 
 -- | Convert each code point in the string to its corresponding uppercase
--- | code point.
+-- | code point. This will preserve the number of code points in the string.
 -- |
 -- | Note: this is not the full Unicode algorithm, see `toUpper`.
 toUpperSimple :: String -> String
 toUpperSimple = conv CP.toUpperSimple
 
 -- | Convert each code point in the string to its corresponding lowercase
--- | code point.
+-- | code point. This will preserve the number of code points in the string.
 -- |
 -- | Note: this is not the full Unicode algorithm, see `toLower`.
 toLowerSimple :: String -> String
 toLowerSimple = conv CP.toLowerSimple
 
--- | Code-point-to-code-point case folding. May be faster than `caseFold`.
+-- | Convert each code point in the string to its corresponding case-folded
+-- | code point. This will preserve the number of code points in the string.
+-- |
+-- | Note: this is not the full Unicode algorithm, see `caseFold`.
 caseFoldSimple :: String -> String
 caseFoldSimple = conv CP.caseFoldSimple
 
