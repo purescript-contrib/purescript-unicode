@@ -9,7 +9,7 @@ module Data.CodePoint.Unicode
   , isAlpha
   , isAlphaNum
   , isLetter
-  , isDigit
+  , isDigit -- Deprecated
   , isDecDigit
   , isOctDigit
   , isHexDigit
@@ -22,7 +22,7 @@ module Data.CodePoint.Unicode
   , isMark
   , isNumber
 
-  , digitToInt
+  , digitToInt -- Deprecated
   , hexDigitToInt
   , decDigitToInt
   , octDigitToInt

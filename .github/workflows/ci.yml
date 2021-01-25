@@ -25,6 +25,7 @@ jobs:
           path: |
             .spago
             output
+
       - name: Install dependencies
         run: spago install
 
