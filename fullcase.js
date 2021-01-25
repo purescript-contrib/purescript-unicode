@@ -54,7 +54,7 @@ const lines = keys.map(code => data[code]).map(d =>
   `{ code: ${d.code}, lower: ${d.lower}, title: ${d.title}, upper: ${d.upper}, fold: ${d.fold}, foldFull: ${d.foldFull} }`
 );
 
-const file = `module Data.CodePoint.Unicode.Casing where
+const file = `module Data.CodePoint.Unicode.Internal.Casing where
 
 import Prelude
 
@@ -114,4 +114,4 @@ upper code =
   in if Array.null uppered then [uTowupper code] else uppered
 `;
 
-fs.writeFileSync("src/Data/CodePoint/Unicode/Casing.purs", file);
+fs.writeFileSync("src/Data/CodePoint/Unicode/Internal/Casing.purs", file);

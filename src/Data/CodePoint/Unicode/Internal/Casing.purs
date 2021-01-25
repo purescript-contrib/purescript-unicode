@@ -1,4 +1,4 @@
-module Data.CodePoint.Unicode.Casing where
+module Data.CodePoint.Unicode.Internal.Casing where
 
 import Prelude
 

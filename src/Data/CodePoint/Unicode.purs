@@ -48,7 +48,7 @@ module Data.CodePoint.Unicode
 import Prelude
 
 import Data.Char (toCharCode)
-import Data.CodePoint.Unicode.Casing as Casing
+import Data.CodePoint.Unicode.Internal.Casing as Casing
 import Data.CodePoint.Unicode.Internal (UnicodeCategory(..), uTowtitle, uTowlower, uTowupper, uIswalnum, uIswalpha, uIswlower, uIswupper, uIswspace, uIswprint, uIswcntrl, uGencat)
 import Data.Enum (fromEnum)
 import Data.Maybe (Maybe(..))
