@@ -9,7 +9,7 @@ A library for working with the properties of Unicode code points, including the 
 
 General functions for working with `String`s in terms of `CodePoint`s are found in the `Data.String.CodePoints` module in the [`strings` library](https://github.com/purescript/purescript-strings).
 
-This version of the `unicode` library supports the [Unicode standard, version 13.0.0](https://www.unicode.org/versions/Unicode13.0.0).
+The version of the [Unicode standard](https://unicode.org/standard/standard.html) supported by this library can be found in the [`unicode-version`](./unicode-version) file.
 
 ## Installation
 
