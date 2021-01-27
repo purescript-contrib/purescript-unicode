@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Monad.Reader.Trans (runReaderT)
 import Effect (Effect)
-import Test.Data.Char.Unicode (dataCharUnicodeTests)
+import Test.Data.CodePoint.Unicode (dataCharUnicodeTests)
 
 main :: Effect Unit
 main =

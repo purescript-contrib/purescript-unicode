@@ -6,10 +6,15 @@ Notable changes to this project are documented in this file. The format is based
 
 Breaking changes (😱!!!):
 - Added support for PureScript 0.14 and dropped support for all previous versions (#30 by @JordanMartinez)
+- Main module renamed to `Data.CodePoint.Unicode`, functions now operate on `CodePoint`s, no longer `Char`s (#15 by @MonoidMusician)
+- Simple case conversions renamed `toUpper` -> `toUpperSimple`, etc. (#15 by @MonoidMusician)
+- Deprecation warnings for `isDigit` and `digitToInt` (#31 by @milesfrain)
 
 New features:
 - Added `hexDigitToInt`, `decDigitToInt`, `octDigitToInt` and deprecated `isDigit` and `digitToInt` (#31 by @milesfrain)
-
+- New `toUpper`, `toLower`, `toTitle` based on full Unicode replacements, which may return more than one code point (#15 by @MonoidMusician)
+- Added `caseFold` and `caseFoldSimple` (#15 by @MonoidMusician)
+- New module `Data.String.Unicode` for case-conversion operating on strings (derived from the code point functions) (#15 by @MonoidMusician)
 Bugfixes:
 
 Other improvements:

@@ -5,7 +5,11 @@
 [![Pursuit](https://pursuit.purescript.org/packages/purescript-unicode/badge)](https://pursuit.purescript.org/packages/purescript-unicode)
 [![Maintainer: cdepillabout](https://img.shields.io/badge/maintainer-cdepillabout-teal.svg)](https://github.com/cdepillabout)
 
-The library summary hasn't been written yet (contributions are welcome!). The library summary describes the library's purpose in one to three sentences.
+A library for working with the properties of Unicode code points, including the general category of a code point, predicates for determining whether a code point is a letter or number character (`isLetter` and `isNumber`, for example), and case conversion functions (`toUpper`, `toLower`, and `toTitle`, as well as `caseFold` for caseless matching).
+
+General functions for working with `String`s in terms of `CodePoint`s are found in the `Data.String.CodePoints` module in the [`strings` library](https://github.com/purescript/purescript-strings).
+
+The version of the [Unicode standard](https://unicode.org/standard/standard.html) supported by this library can be found in the [`unicode-version`](./unicode-version) file.
 
 ## Installation
 

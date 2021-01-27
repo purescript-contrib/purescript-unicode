@@ -4,9 +4,12 @@ This directory contains documentation for `unicode`. If you are interested in co
 
 ## Generating Internal Modules
 
-The [Data.Char.Unicode.Internal](../src/Data/Char/Unicode/Internal.purs) module can be generated with the following command:
+The [Data.CodePoint.Unicode.Internal](../src/Data/CodePoint/Unicode/Internal.purs) and [Data.CodePoint.Unicode.Internal.Casing](../src/Data/CodePoint/Unicode/Internal/Casing.purs) modules can be generated with the following command from the root of this repository:
 
 ```sh
-$ wget 'http://www.unicode.org/Public/6.0.0/ucd/UnicodeData.txt'
-$ ./ubconfc < UnicodeData.txt > src/Data/Char/Unicode/Internal.purs
+$ ./download.sh
+$ ./ubconfc < UnicodeData.txt > src/Data/CodePoint/Unicode/Internal.purs
+$ ./fullcase.js
 ```
+
+(Note that this downloads data according to the version stored in the [`unicode-version`](../unicode-version) file in the root.)

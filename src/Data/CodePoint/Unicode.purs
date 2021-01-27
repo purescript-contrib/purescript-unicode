@@ -1,4 +1,4 @@
-module Data.Char.Unicode
+module Data.CodePoint.Unicode
   ( -- Predicates
     isAscii
   , isAsciiLower
@@ -9,10 +9,10 @@ module Data.Char.Unicode
   , isAlpha
   , isAlphaNum
   , isLetter
-  , isHexDigit
+  , isDigit -- Deprecated
   , isDecDigit
   , isOctDigit
-  , isDigit -- Deprecated
+  , isHexDigit
   , isControl
   , isPrint
   , isSpace
@@ -22,16 +22,20 @@ module Data.Char.Unicode
   , isMark
   , isNumber
 
--- Conversion to Int
+  , digitToInt -- Deprecated
   , hexDigitToInt
   , decDigitToInt
   , octDigitToInt
-  , digitToInt -- Deprecated
 
   -- Case conversion
   , toLower
   , toUpper
   , toTitle
+  , caseFold
+  , toLowerSimple
+  , toUpperSimple
+  , toTitleSimple
+  , caseFoldSimple
 
   -- Unicode General Categories
   , GeneralCategory(..)
@@ -44,9 +48,13 @@ module Data.Char.Unicode
 import Prelude
 
 import Data.Char (toCharCode)
-import Data.Char.Unicode.Internal (UnicodeCategory(..), uTowtitle, uTowlower, uTowupper, uIswalnum, uIswalpha, uIswlower, uIswupper, uIswspace, uIswprint, uIswcntrl, uGencat)
+import Data.CodePoint.Unicode.Internal.Casing as Casing
+import Data.CodePoint.Unicode.Internal (UnicodeCategory(..), uTowtitle, uTowlower, uTowupper, uIswalnum, uIswalpha, uIswlower, uIswupper, uIswspace, uIswprint, uIswcntrl, uGencat)
+import Data.Enum (fromEnum)
 import Data.Maybe (Maybe(..))
+import Data.String.CodePoints (CodePoint, codePointFromChar)
 import Prim.TypeError (class Warn, Text)
+import Unsafe.Coerce (unsafeCoerce)
 
 -- | Unicode General Categories (column 2 of the UnicodeData table) in
 -- | the order they are listed in the Unicode standard (the Unicode
@@ -65,16 +73,16 @@ import Prim.TypeError (class Warn, Text)
 -- |
 -- | ```
 -- | >>> UppercaseLetter == UppercaseLetter
--- | True
+-- | true
 -- | >>> UppercaseLetter == LowercaseLetter
--- | False
+-- | false
 -- | ```
 -- |
 -- | `Ord` instance:
 -- |
 -- | ```
 -- | >>> NonSpacingMark <= MathSymbol
--- | True
+-- | true
 -- | ```
 -- |
 -- | `Enum` instance (TODO: this is not implemented yet):
@@ -306,110 +314,110 @@ instance boundedGeneralCategory :: Bounded GeneralCategory where
 -- | Basic usage:
 -- |
 -- | ```
--- | >>> generalCategory 'a'
+-- | >>> generalCategory (codePointFromChar 'a')
 -- | Just LowercaseLetter
--- | >>> generalCategory 'A'
+-- | >>> generalCategory (codePointFromChar 'A')
 -- | Just UppercaseLetter
--- | >>> generalCategory '0'
+-- | >>> generalCategory (codePointFromChar '0')
 -- | Just DecimalNumber
--- | >>> generalCategory '%'
+-- | >>> generalCategory (codePointFromChar '%')
 -- | Just OtherPunctuation
--- | >>> generalCategory '♥'
+-- | >>> generalCategory (codePointFromChar '♥')
 -- | Just OtherSymbol
--- | >>> generalCategory '\31'
+-- | >>> generalCategory (codePointFromChar '\31')
 -- | Just Control
--- | >>> generalCategory ' '
+-- | >>> generalCategory (codePointFromChar ' ')
 -- | Just Space
 -- | ```
-generalCategory :: Char -> Maybe GeneralCategory
-generalCategory = map unicodeCatToGeneralCat <<< uGencat <<< toCharCode
+generalCategory :: CodePoint -> Maybe GeneralCategory
+generalCategory = map unicodeCatToGeneralCat <<< uGencat <<< fromEnum
 
 -- | Selects the first 128 characters of the Unicode character set,
 -- | corresponding to the ASCII character set.
-isAscii :: Char -> Boolean
-isAscii c =  c <  '\x80'
+isAscii :: CodePoint -> Boolean
+isAscii c = c < codePointFromChar '\x80'
 
 -- | Selects the first 256 characters of the Unicode character set,
 -- | corresponding to the ISO 8859-1 (Latin-1) character set.
-isLatin1 :: Char -> Boolean
-isLatin1 c =  c <= '\xff'
+isLatin1 :: CodePoint -> Boolean
+isLatin1 c = c <= codePointFromChar '\xff'
 
 -- | Selects ASCII lower-case letters,
 -- | i.e. characters satisfying both `isAscii` and `isLower`.
-isAsciiLower :: Char -> Boolean
-isAsciiLower c =  c >= 'a' && c <= 'z'
+isAsciiLower :: CodePoint -> Boolean
+isAsciiLower c = c >= codePointFromChar 'a' && c <= codePointFromChar 'z'
 
 -- | Selects ASCII upper-case letters,
 -- | i.e. characters satisfying both `isAscii` and `isUpper`.
-isAsciiUpper :: Char -> Boolean
-isAsciiUpper c =  c >= 'A' && c <= 'Z'
+isAsciiUpper :: CodePoint -> Boolean
+isAsciiUpper c = c >= codePointFromChar 'A' && c <= codePointFromChar 'Z'
 
 -- | Selects control characters, which are the non-printing characters of
 -- | the Latin-1 subset of Unicode.
-isControl :: Char -> Boolean
-isControl = uIswcntrl <<< toCharCode
+isControl :: CodePoint -> Boolean
+isControl = uIswcntrl <<< fromEnum
 
 -- | Selects printable Unicode characters
 -- | (letters, numbers, marks, punctuation, symbols and spaces).
-isPrint :: Char -> Boolean
-isPrint = uIswprint <<< toCharCode
+isPrint :: CodePoint -> Boolean
+isPrint = uIswprint <<< fromEnum
 
--- | Returns `True` for any Unicode space character, and the control
+-- | Returns `true` for any Unicode space character, and the control
 -- | characters `\t`, `\n`, `\r`, `\f`, `\v`.
 -- |
 -- | `isSpace` includes non-breaking space.
-isSpace :: Char -> Boolean
+isSpace :: CodePoint -> Boolean
 -- The magic 0x377 used in the code below isn't really that magical. As of
 -- 2014, all the codepoints at or below 0x377 have been assigned, so we
 -- shouldn't have to worry about any new spaces appearing below there.
 isSpace c = if uc <= 0x337
                then uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
-               else uIswspace $ toCharCode c
+               else uIswspace uc
   where
     uc :: Int
-    uc = toCharCode c
+    uc = fromEnum c
 
 -- | Selects upper-case or title-case alphabetic Unicode characters (letters).
 -- | Title case is used by a small number of letter ligatures like the
 -- | single-character form of /Lj/.
-isUpper :: Char -> Boolean
-isUpper = uIswupper <<< toCharCode
+isUpper :: CodePoint -> Boolean
+isUpper = uIswupper <<< fromEnum
 
 -- | Selects lower-case alphabetic Unicode characters (letters).
-isLower :: Char -> Boolean
-isLower = uIswlower <<< toCharCode
+isLower :: CodePoint -> Boolean
+isLower = uIswlower <<< fromEnum
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- | title-case letters, plus letters of caseless scripts and modifiers letters).
-isAlpha :: Char -> Boolean
-isAlpha = uIswalpha <<< toCharCode
+isAlpha :: CodePoint -> Boolean
+isAlpha = uIswalpha <<< fromEnum
 
 -- | Selects alphabetic or numeric digit Unicode characters.
 -- |
 -- | Note that numeric digits outside the ASCII range are selected by this
 -- | function but not by `isDigit`.  Such digits may be part of identifiers
 -- | but are not used by the printer and reader to represent numbers.
-isAlphaNum :: Char -> Boolean
-isAlphaNum = uIswalnum <<< toCharCode
+isAlphaNum :: CodePoint -> Boolean
+isAlphaNum = uIswalnum <<< fromEnum
 
 -- | Selects ASCII decimal digits, i.e. `0..9`.
-isDecDigit :: Char -> Boolean
-isDecDigit c = let diff = (toCharCode c - toCharCode '0')
+isDecDigit :: CodePoint -> Boolean
+isDecDigit c = let diff = (fromEnum c - toCharCode '0')
             in diff <= 9 && diff >= 0
 
 -- | Selects ASCII octal digits, i.e. `0..7`.
-isOctDigit :: Char -> Boolean
-isOctDigit c = let diff = (toCharCode c - toCharCode '0')
+isOctDigit :: CodePoint -> Boolean
+isOctDigit c = let diff = (fromEnum c - toCharCode '0')
                in diff <= 7 && diff >= 0
 
 -- | Selects ASCII hexadecimal digits,
 -- | i.e. `0..9, A..F, a..f`.
-isHexDigit :: Char -> Boolean
+isHexDigit :: CodePoint -> Boolean
 isHexDigit c = isDecDigit c
-            || (let diff = (toCharCode c - toCharCode 'A') in diff <= 5 && diff >= 0)
-            || (let diff = (toCharCode c - toCharCode 'a') in diff <= 5 && diff >= 0)
+            || (let diff = (fromEnum c - toCharCode 'A') in diff <= 5 && diff >= 0)
+            || (let diff = (fromEnum c - toCharCode 'a') in diff <= 5 && diff >= 0)
 
-isDigit :: Warn (Text "'isDigit' is deprecated, use 'isDecDigit', 'isHexDigit', or 'isOctDigit' instead") => Char -> Boolean
+isDigit :: Warn (Text "'isDigit' is deprecated, use 'isDecDigit', 'isHexDigit', or 'isOctDigit' instead") => CodePoint -> Boolean
 isDigit = isDecDigit
 
 -- | Selects Unicode punctuation characters, including various kinds
@@ -436,20 +444,20 @@ isDigit = isDecDigit
 -- | Basic usage:
 -- |
 -- | ```
--- | >>> isPunctuation 'a'
+-- | >>> isPunctuation (codePointFromChar 'a')
 -- | false
--- | >>> isPunctuation '7'
+-- | >>> isPunctuation (codePointFromChar '7')
 -- | false
--- | >>> isPunctuation '♥'
+-- | >>> isPunctuation (codePointFromChar '♥')
 -- | false
--- | >>> isPunctuation '"'
+-- | >>> isPunctuation (codePointFromChar '"')
 -- | true
--- | >>> isPunctuation '?'
+-- | >>> isPunctuation (codePointFromChar '?')
 -- | true
--- | >>> isPunctuation '—'
+-- | >>> isPunctuation (codePointFromChar '—')
 -- | true
 -- | ```
-isPunctuation :: Char -> Boolean
+isPunctuation :: CodePoint -> Boolean
 isPunctuation c =
     case generalCategory c of
         Just ConnectorPunctuation    -> true
@@ -482,11 +490,11 @@ isPunctuation c =
 -- | Basic usage:
 -- |
 -- | ```
--- | >>> isSymbol 'a'
+-- | >>> isSymbol (codePointFromChar 'a')
 -- | false
--- | >>> isSymbol '6'
+-- | >>> isSymbol (codePointFromChar '6')
 -- | false
--- | >>> isSymbol '='
+-- | >>> isSymbol (codePointFromChar '=')
 -- | true
 -- | ```
 -- |
@@ -494,12 +502,12 @@ isPunctuation c =
 -- | counter-intuitive depending on one's background:
 -- |
 -- | ```
--- | >>> isSymbol '+'
+-- | >>> isSymbol (codePointFromChar '+')
 -- | true
--- | >>> isSymbol '-'
+-- | >>> isSymbol (codePointFromChar '-')
 -- | false
 -- | ```
-isSymbol :: Char -> Boolean
+isSymbol :: CodePoint -> Boolean
 isSymbol c =
     case generalCategory c of
         Just MathSymbol              -> true
@@ -508,28 +516,50 @@ isSymbol c =
         Just OtherSymbol             -> true
         _                            -> false
 
--- | Convert a letter to the corresponding upper-case letter, if any.
+-- | Convert a code point to the corresponding upper-case sequence of code points.
 -- | Any other character is returned unchanged.
-toUpper :: Char -> Char
-toUpper = withCharCode uTowupper
+toUpper :: CodePoint -> Array CodePoint
+toUpper = modifyFull Casing.upper
 
--- | Convert a letter to the corresponding lower-case letter, if any.
+-- | Convert a code point to the corresponding lower-case sequence of code points.
 -- | Any other character is returned unchanged.
-toLower :: Char -> Char
-toLower = withCharCode uTowlower
+toLower :: CodePoint -> Array CodePoint
+toLower = modifyFull Casing.lower
 
--- | Convert a letter to the corresponding title-case or upper-case
--- | letter, if any.  (Title case differs from upper case only for a small
--- | number of ligature letters.)
+-- | Convert a code point to the corresponding title-case or upper-case
+-- | sequence of code points.  (Title case differs from upper case only for a
+-- | small number of ligature characters.)
 -- | Any other character is returned unchanged.
-toTitle :: Char -> Char
-toTitle = withCharCode uTowtitle
+toTitle :: CodePoint -> Array CodePoint
+toTitle = modifyFull Casing.title
 
--- | We define this via the FFI because we want to avoid the
--- | dictionary overhead of going via Enum, and because we're certain
--- | that the Unicode table we used to generate these conversions
--- | doesn't generate char codes outside the valid range.
-foreign import withCharCode :: (Int -> Int) -> Char -> Char
+-- | Convert a code point to the corresponding case-folded sequence of code
+-- | points, for implementing caseless matching.
+-- | Any other character is returned unchanged.
+caseFold :: CodePoint -> Array CodePoint
+caseFold = modifyFull Casing.foldFull
+
+-- | Convert a code point to the corresponding upper-case code point, if any.
+-- | Any other character is returned unchanged.
+toUpperSimple :: CodePoint -> CodePoint
+toUpperSimple = modify uTowupper
+
+-- | Convert a code point to the corresponding lower-case code point, if any.
+-- | Any other character is returned unchanged.
+toLowerSimple :: CodePoint -> CodePoint
+toLowerSimple = modify uTowlower
+
+-- | Convert a code point to the corresponding title-case or upper-case
+-- | code point, if any.  (Title case differs from upper case only for a small
+-- | number of ligature characters.)
+-- | Any other character is returned unchanged.
+toTitleSimple :: CodePoint -> CodePoint
+toTitleSimple = modify uTowtitle
+
+-- | Convert a code point to the corresponding case-folded code point.
+-- | Any other character is returned unchanged.
+caseFoldSimple :: CodePoint -> CodePoint
+caseFoldSimple = modify Casing.fold
 
 -- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
 -- | satisfies `isHexDigit` (one of `0..9, A..F, a..f`). Anything else converts to `Nothing`
@@ -537,19 +567,19 @@ foreign import withCharCode :: (Int -> Int) -> Char -> Char
 -- | ```
 -- | >>> import Data.Traversable
 -- |
--- | >>> traverse hexDigitToInt ['0','1','2','3','4','5','6','7','8','9']
+-- | >>> traverse (hexDigitToInt <<< codePointFromChar) ['0','1','2','3','4','5','6','7','8','9']
 -- | (Just [0,1,2,3,4,5,6,7,8,9])
 -- |
--- | >>> traverse hexDigitToInt ['a','b','c','d','e','f']
+-- | >>> traverse (hexDigitToInt <<< codePointFromChar) ['a','b','c','d','e','f']
 -- | (Just [10,11,12,13,14,15])
 -- |
--- | >>> traverse hexDigitToInt ['A','B','C','D','E','F']
+-- | >>> traverse (hexDigitToInt <<< codePointFromChar) ['A','B','C','D','E','F']
 -- | (Just [10,11,12,13,14,15])
 -- |
--- | >>> hexDigitToInt 'G'
+-- | >>> hexDigitToInt (codePointFromChar 'G')
 -- | Nothing
 -- | ```
-hexDigitToInt :: Char -> Maybe Int
+hexDigitToInt :: CodePoint -> Maybe Int
 hexDigitToInt c = result
   where
     result :: Maybe Int
@@ -560,13 +590,13 @@ hexDigitToInt c = result
       | otherwise                      = Nothing
 
     dec :: Int
-    dec = toCharCode c - toCharCode '0'
+    dec = fromEnum c - toCharCode '0'
 
     hexLower :: Int
-    hexLower = toCharCode c - toCharCode 'a'
+    hexLower = fromEnum c - toCharCode 'a'
 
     hexUpper :: Int
-    hexUpper = toCharCode c - toCharCode 'A'
+    hexUpper = fromEnum c - toCharCode 'A'
 
 -- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
 -- | satisfies `isDecDigit` (one of `0..9`). Anything else converts to `Nothing`
@@ -580,9 +610,9 @@ hexDigitToInt c = result
 -- | >>> decDigitToInt 'a'
 -- | Nothing
 -- | ```
-decDigitToInt :: Char -> Maybe Int
+decDigitToInt :: CodePoint -> Maybe Int
 decDigitToInt c
-  | isDecDigit c = Just $ toCharCode c - toCharCode '0'
+  | isDecDigit c = Just $ fromEnum c - toCharCode '0'
   | otherwise    = Nothing
 
 -- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
@@ -597,21 +627,20 @@ decDigitToInt c
 -- | >>> octDigitToInt '8'
 -- | Nothing
 -- | ```
-octDigitToInt :: Char -> Maybe Int
+octDigitToInt :: CodePoint -> Maybe Int
 octDigitToInt c
-  | isOctDigit c = Just $ toCharCode c - toCharCode '0'
+  | isOctDigit c = Just $ fromEnum c - toCharCode '0'
   | otherwise    = Nothing
 
-digitToInt :: Warn (Text "'digitToInt' is deprecated, use 'decDigitToInt', 'hexDigitToInt', or 'octDigitToInt' instead") => Char -> Maybe Int
+digitToInt :: Warn (Text "'digitToInt' is deprecated, use 'decDigitToInt', 'hexDigitToInt', or 'octDigitToInt' instead") => CodePoint -> Maybe Int
 digitToInt = hexDigitToInt
 
 -- | Selects alphabetic Unicode characters (lower-case, upper-case and
 -- | title-case letters, plus letters of caseless scripts and
--- | modifiers letters). This function is equivalent to
--- | `Data.Char.isAlpha`.
+-- | modifiers letters).
 -- |
--- | This function returns `True` if its argument has one of the
--- | following `GeneralCategory`s, or `False` otherwise:
+-- | This function returns `true` if its argument has one of the
+-- | following `GeneralCategory`s, or `false` otherwise:
 -- |
 -- | - `UppercaseLetter`
 -- | - `LowercaseLetter`
@@ -629,30 +658,30 @@ digitToInt = hexDigitToInt
 -- | Basic usage:
 -- |
 -- | ```
--- | >>> isLetter 'a'
--- | True
--- | >>> isLetter 'A'
--- | True
--- | >>> isLetter '0'
--- | False
--- | >>> isLetter '%'
--- | False
--- | >>> isLetter '♥'
--- | False
--- | >>> isLetter '\31'
--- | False
+-- | >>> isLetter (codePointFromChar 'a')
+-- | true
+-- | >>> isLetter (codePointFromChar 'A')
+-- | true
+-- | >>> isLetter (codePointFromChar '0')
+-- | false
+-- | >>> isLetter (codePointFromChar '%')
+-- | false
+-- | >>> isLetter (codePointFromChar '♥')
+-- | false
+-- | >>> isLetter (codePointFromChar '\x1F')
+-- | false
 -- | ```
 -- |
 -- | Ensure that 'isLetter' and 'isAlpha' are equivalent.
 -- |
 -- | ```
--- | >>> let chars = [(chr 0)..]
--- | >>> let letters = map isLetter chars
--- | >>> let alphas = map isAlpha chars
+-- | >>> chars = enumFromTo bottom top :: Array CodePoint
+-- | >>> letters = map isLetter chars
+-- | >>> alphas = map isAlpha chars
 -- | >>> letters == alphas
--- | True
+-- | true
 -- | ```
-isLetter :: Char -> Boolean
+isLetter :: CodePoint -> Boolean
 isLetter c =
     case generalCategory c of
         Just UppercaseLetter         -> true
@@ -682,9 +711,9 @@ isLetter c =
 -- | Basic usage:
 -- |
 -- | ```
--- | >>> isMark 'a'
+-- | >>> isMark (codePointFromChar 'a')
 -- | false
--- | >>> isMark '0'
+-- | >>> isMark (codePointFromChar '0')
 -- | false
 -- | ```
 -- |
@@ -692,17 +721,17 @@ isLetter c =
 -- | another character before they become printable:
 -- |
 -- | ```
--- | >>> map isMark "ò"
+-- | >>> map isMark (toCodePointArray "ò")
 -- | [false,true]
 -- | ```
 -- |
 -- | Puns are not necessarily supported:
 -- |
 -- | ```
--- | >>> isMark '✓'
+-- | >>> isMark (codePointFromChar '✓')
 -- | false
 -- | ```
-isMark :: Char -> Boolean
+isMark :: CodePoint -> Boolean
 isMark c =
     case generalCategory c of
         Just NonSpacingMark          -> true
@@ -730,28 +759,28 @@ isMark c =
 -- | Basic usage:
 -- |
 -- | ```
--- | >>> isNumber 'a'
+-- | >>> isNumber (codePointFromChar 'a')
 -- | false
--- | >>> isNumber '%'
+-- | >>> isNumber (codePointFromChar '%')
 -- | false
--- | >>> isNumber '3'
+-- | >>> isNumber (codePointFromChar '3')
 -- | true
 -- | ```
 -- |
 -- | ASCII @\'0\'@ through @\'9\'@ are all numbers:
 -- |
 -- | ```
--- | >>> and $ map isNumber ['0'..'9']
+-- | >>> and $ map (isNumber <<< codePointFromChar) (enumFromTo '0' '9' :: Array Char)
 -- | true
 -- | ```
 -- |
 -- | Unicode Roman numerals are \"numbers\" as well:
 -- |
 -- | ```
--- | >>> isNumber 'Ⅸ'
+-- | >>> isNumber (codePointFromChar 'Ⅸ')
 -- | true
 -- | ```
-isNumber :: Char -> Boolean
+isNumber :: CodePoint -> Boolean
 isNumber c =
     case generalCategory c of
         Just DecimalNumber           -> true
@@ -778,34 +807,43 @@ isNumber c =
 -- | Basic usage:
 -- |
 -- | ```
--- | >>> isSeparator 'a'
+-- | >>> isSeparator (codePointFromChar 'a')
 -- | false
--- | >>> isSeparator '6'
+-- | >>> isSeparator (codePointFromChar '6')
 -- | false
--- | >>> isSeparator ' '
+-- | >>> isSeparator (codePointFromChar ' ')
 -- | true
+-- | >>> isSeparator (codePointFromChar '-')
+-- | false
 -- | ```
 -- |
 -- | Warning: newlines and tab characters are not considered
 -- | separators.
 -- |
 -- | ```
--- | >>> isSeparator '\n'
+-- | >>> isSeparator (codePointFromChar '\n')
 -- | false
--- | >>> isSeparator '\t'
+-- | >>> isSeparator (codePointFromChar '\t')
 -- | false
 -- | ```
 -- |
 -- | But some more exotic characters are (like HTML's @&nbsp;@):
 -- |
 -- | ```
--- | >>> isSeparator '\160'
+-- | >>> isSeparator (codePointFromChar '\xA0')
 -- | true
 -- | ```
-isSeparator :: Char -> Boolean
+isSeparator :: CodePoint -> Boolean
 isSeparator c =
     case generalCategory c of
         Just Space                   -> true
         Just LineSeparator           -> true
         Just ParagraphSeparator      -> true
         _                            -> false
+
+-- Helper functions
+modify :: (Int -> Int) -> (CodePoint -> CodePoint)
+modify = unsafeCoerce
+
+modifyFull :: (Int -> Array Int) -> (CodePoint -> Array CodePoint)
+modifyFull = unsafeCoerce
