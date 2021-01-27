@@ -14,7 +14,7 @@ const folding =
 const scData = {};
 const cfData = {};
 
-const rhex = a => typeof a === 'string' ? +('0x'+a) : +a;
+const rhex = a => parseInt(a, 16);
 const sortHex = (a,b) => rhex(a) - rhex(b);
 
 for (const spec of SpecialCasing.matchAll(special)) {
