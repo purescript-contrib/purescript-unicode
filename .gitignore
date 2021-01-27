@@ -3,6 +3,7 @@
 !.github
 !.editorconfig
 !.eslintrc.json
+!.gitattributes
 
 output
 generated-docs
