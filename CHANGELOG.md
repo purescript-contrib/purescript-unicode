@@ -4,7 +4,17 @@ Notable changes to this project are documented in this file. The format is based
 
 ## [Unreleased]
 
-Breaking changes (😱!!!):
+Breaking changes:
+
+New features:
+
+Bugfixes:
+
+Other improvements:
+
+## [v5.0.0](https://github.com/purescript-contrib/purescript-unicode/releases/tag/v5.0.0) - 2021-02-26
+
+Breaking changes:
 - Added support for PureScript 0.14 and dropped support for all previous versions (#30 by @JordanMartinez)
 - Main module renamed to `Data.CodePoint.Unicode`, functions now operate on `CodePoint`s, no longer `Char`s (#15 by @MonoidMusician)
 - Simple case conversions renamed `toUpper` -> `toUpperSimple`, etc. (#15 by @MonoidMusician)
