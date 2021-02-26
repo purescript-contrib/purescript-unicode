@@ -8,7 +8,7 @@
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "git://github.com/purescript-contrib/purescript-unicode.git"
+    "url": "https://github.com/purescript-contrib/purescript-unicode.git"
   },
   "ignore": [
     "**/.*",
@@ -19,14 +19,15 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-maybe": "^4.0.1",
-    "purescript-foldable-traversable": "^4.1.1",
-    "purescript-strings": "^4.0.1"
+    "purescript-foldable-traversable": "^5.0.0",
+    "purescript-maybe": "^5.0.0",
+    "purescript-strings": "^5.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^4.2.0",
-    "purescript-spec": "^3.1.0",
-    "purescript-random": "^4.0.0",
-    "purescript-quickcheck": "^6.1.0"
+    "purescript-assert": "^5.0.0",
+    "purescript-console": "^5.0.0",
+    "purescript-effect": "^3.0.0",
+    "purescript-quickcheck": "^7.0.0",
+    "purescript-random": "^5.0.0"
   }
 }
