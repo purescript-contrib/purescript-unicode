@@ -54,6 +54,7 @@ dataCharUnicodeTests = describe "module Data.CodePoint.Unicode" do
     isPrintTests
     isSpaceTests
     isUpperTests
+    isLowerTests
     isAlphaTests
     isAlphaNumTests
     isDecDigitTests
