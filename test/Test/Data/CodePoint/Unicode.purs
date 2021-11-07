@@ -238,6 +238,8 @@ isSpaceTests = describe "isSpace" do
         isSpace (codePointFromChar '\t') `shouldEqual` true
     it "'a' is not Space" $
         isSpace (codePointFromChar 'a') `shouldEqual` false
+    it "'日' is not Space" $
+        isSpace (codePointFromChar '日') `shouldEqual` false
 
 isUpperTests :: forall m. MonadReader Int m => MonadEffect m => m Unit
 isUpperTests = describe "isUpper" do
