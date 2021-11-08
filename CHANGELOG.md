@@ -12,6 +12,7 @@ Bugfixes:
 
 Other improvements:
 - Run `isLowerTests` in tests (#35 by @JordanMartinez)
+- Added test for CJK characters for `isSpace` (#36 by @maxdeviant)
 
 ## [v5.0.0](https://github.com/purescript-contrib/purescript-unicode/releases/tag/v5.0.0) - 2021-02-26
 
