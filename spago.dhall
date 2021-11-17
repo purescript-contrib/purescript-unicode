@@ -1,4 +1,6 @@
 { name = "unicode"
+, license = "BSD-3-Clause"
+, repository = "https://github.com/purescript-contrib/purescript-unicode"
 , dependencies =
   [ "arrays"
   , "assert"
