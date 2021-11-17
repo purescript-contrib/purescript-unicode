@@ -11,6 +11,11 @@ New features:
 Bugfixes:
 
 Other improvements:
+
+## [v5.0.1](https://github.com/purescript-contrib/purescript-unicode/releases/tag/v5.0.1) - 2021-11-16
+
+Other improvements:
+- Moved third-party licenses to `LICENSE_THIRDPARTY` (#37 by @maxdeviant)
 - Run `isLowerTests` in tests (#35 by @JordanMartinez)
 - Added test for CJK characters for `isSpace` (#36 by @maxdeviant)
 
