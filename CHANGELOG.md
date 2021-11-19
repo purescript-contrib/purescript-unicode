@@ -11,6 +11,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Added `purs-tidy` formatter (#38 by @thomashoneyman)
 
 ## [v5.0.1](https://github.com/purescript-contrib/purescript-unicode/releases/tag/v5.0.1) - 2021-11-16
 
