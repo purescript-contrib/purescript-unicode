@@ -108,36 +108,36 @@ import Unsafe.Coerce (unsafeCoerce)
 -- | NotAssigned
 -- | ```
 data GeneralCategory
-        = UppercaseLetter       -- ^ Lu: Letter, Uppercase
-        | LowercaseLetter       -- ^ Ll: Letter, Lowercase
-        | TitlecaseLetter       -- ^ Lt: Letter, Titlecase
-        | ModifierLetter        -- ^ Lm: Letter, Modifier
-        | OtherLetter           -- ^ Lo: Letter, Other
-        | NonSpacingMark        -- ^ Mn: Mark, Non-Spacing
-        | SpacingCombiningMark  -- ^ Mc: Mark, Spacing Combining
-        | EnclosingMark         -- ^ Me: Mark, Enclosing
-        | DecimalNumber         -- ^ Nd: Number, Decimal
-        | LetterNumber          -- ^ Nl: Number, Letter
-        | OtherNumber           -- ^ No: Number, Other
-        | ConnectorPunctuation  -- ^ Pc: Punctuation, Connector
-        | DashPunctuation       -- ^ Pd: Punctuation, Dash
-        | OpenPunctuation       -- ^ Ps: Punctuation, Open
-        | ClosePunctuation      -- ^ Pe: Punctuation, Close
-        | InitialQuote          -- ^ Pi: Punctuation, Initial quote
-        | FinalQuote            -- ^ Pf: Punctuation, Final quote
-        | OtherPunctuation      -- ^ Po: Punctuation, Other
-        | MathSymbol            -- ^ Sm: Symbol, Math
-        | CurrencySymbol        -- ^ Sc: Symbol, Currency
-        | ModifierSymbol        -- ^ Sk: Symbol, Modifier
-        | OtherSymbol           -- ^ So: Symbol, Other
-        | Space                 -- ^ Zs: Separator, Space
-        | LineSeparator         -- ^ Zl: Separator, Line
-        | ParagraphSeparator    -- ^ Zp: Separator, Paragraph
-        | Control               -- ^ Cc: Other, Control
-        | Format                -- ^ Cf: Other, Format
-        | Surrogate             -- ^ Cs: Other, Surrogate
-        | PrivateUse            -- ^ Co: Other, Private Use
-        | NotAssigned           -- ^ Cn: Other, Not Assigned
+  = UppercaseLetter -- ^ Lu: Letter, Uppercase
+  | LowercaseLetter -- ^ Ll: Letter, Lowercase
+  | TitlecaseLetter -- ^ Lt: Letter, Titlecase
+  | ModifierLetter -- ^ Lm: Letter, Modifier
+  | OtherLetter -- ^ Lo: Letter, Other
+  | NonSpacingMark -- ^ Mn: Mark, Non-Spacing
+  | SpacingCombiningMark -- ^ Mc: Mark, Spacing Combining
+  | EnclosingMark -- ^ Me: Mark, Enclosing
+  | DecimalNumber -- ^ Nd: Number, Decimal
+  | LetterNumber -- ^ Nl: Number, Letter
+  | OtherNumber -- ^ No: Number, Other
+  | ConnectorPunctuation -- ^ Pc: Punctuation, Connector
+  | DashPunctuation -- ^ Pd: Punctuation, Dash
+  | OpenPunctuation -- ^ Ps: Punctuation, Open
+  | ClosePunctuation -- ^ Pe: Punctuation, Close
+  | InitialQuote -- ^ Pi: Punctuation, Initial quote
+  | FinalQuote -- ^ Pf: Punctuation, Final quote
+  | OtherPunctuation -- ^ Po: Punctuation, Other
+  | MathSymbol -- ^ Sm: Symbol, Math
+  | CurrencySymbol -- ^ Sc: Symbol, Currency
+  | ModifierSymbol -- ^ Sk: Symbol, Modifier
+  | OtherSymbol -- ^ So: Symbol, Other
+  | Space -- ^ Zs: Separator, Space
+  | LineSeparator -- ^ Zl: Separator, Line
+  | ParagraphSeparator -- ^ Zp: Separator, Paragraph
+  | Control -- ^ Cc: Other, Control
+  | Format -- ^ Cf: Other, Format
+  | Surrogate -- ^ Cs: Other, Surrogate
+  | PrivateUse -- ^ Co: Other, Private Use
+  | NotAssigned -- ^ Cn: Other, Not Assigned
 
 generalCatToInt :: GeneralCategory -> Int
 generalCatToInt UppercaseLetter = 1
@@ -236,76 +236,76 @@ unicodeCatToGeneralCat NUMCAT_CO = PrivateUse
 unicodeCatToGeneralCat NUMCAT_CN = NotAssigned
 
 instance showGeneralCategory :: Show GeneralCategory where
-    show UppercaseLetter = "UppercaseLetter"
-    show LowercaseLetter = "LowercaseLetter"
-    show TitlecaseLetter = "TitlecaseLetter"
-    show ModifierLetter = "ModifierLetter"
-    show OtherLetter = "OtherLetter"
-    show NonSpacingMark = "NonSpacingMark"
-    show SpacingCombiningMark = "SpacingCombiningMark"
-    show EnclosingMark = "EnclosingMark"
-    show DecimalNumber = "DecimalNumber"
-    show LetterNumber = "LetterNumber"
-    show OtherNumber = "OtherNumber"
-    show ConnectorPunctuation = "ConnectorPunctuation"
-    show DashPunctuation = "DashPunctuation"
-    show OpenPunctuation = "OpenPunctuation"
-    show ClosePunctuation = "ClosePunctuation"
-    show InitialQuote = "InitialQuote"
-    show FinalQuote = "FinalQuote"
-    show OtherPunctuation = "OtherPunctuation"
-    show MathSymbol = "MathSymbol"
-    show CurrencySymbol = "CurrencySymbol"
-    show ModifierSymbol = "ModifierSymbol"
-    show OtherSymbol = "OtherSymbol"
-    show Space = "Space"
-    show LineSeparator = "LineSeparator"
-    show ParagraphSeparator = "ParagraphSeparator"
-    show Control = "Control"
-    show Format = "Format"
-    show Surrogate = "Surrogate"
-    show PrivateUse = "PrivateUse"
-    show NotAssigned = "NotAssigned"
+  show UppercaseLetter = "UppercaseLetter"
+  show LowercaseLetter = "LowercaseLetter"
+  show TitlecaseLetter = "TitlecaseLetter"
+  show ModifierLetter = "ModifierLetter"
+  show OtherLetter = "OtherLetter"
+  show NonSpacingMark = "NonSpacingMark"
+  show SpacingCombiningMark = "SpacingCombiningMark"
+  show EnclosingMark = "EnclosingMark"
+  show DecimalNumber = "DecimalNumber"
+  show LetterNumber = "LetterNumber"
+  show OtherNumber = "OtherNumber"
+  show ConnectorPunctuation = "ConnectorPunctuation"
+  show DashPunctuation = "DashPunctuation"
+  show OpenPunctuation = "OpenPunctuation"
+  show ClosePunctuation = "ClosePunctuation"
+  show InitialQuote = "InitialQuote"
+  show FinalQuote = "FinalQuote"
+  show OtherPunctuation = "OtherPunctuation"
+  show MathSymbol = "MathSymbol"
+  show CurrencySymbol = "CurrencySymbol"
+  show ModifierSymbol = "ModifierSymbol"
+  show OtherSymbol = "OtherSymbol"
+  show Space = "Space"
+  show LineSeparator = "LineSeparator"
+  show ParagraphSeparator = "ParagraphSeparator"
+  show Control = "Control"
+  show Format = "Format"
+  show Surrogate = "Surrogate"
+  show PrivateUse = "PrivateUse"
+  show NotAssigned = "NotAssigned"
 
 instance eqGeneralCategory :: Eq GeneralCategory where
-    eq UppercaseLetter UppercaseLetter = true
-    eq LowercaseLetter LowercaseLetter = true
-    eq TitlecaseLetter TitlecaseLetter = true
-    eq ModifierLetter ModifierLetter = true
-    eq OtherLetter OtherLetter = true
-    eq NonSpacingMark NonSpacingMark = true
-    eq SpacingCombiningMark SpacingCombiningMark = true
-    eq EnclosingMark EnclosingMark = true
-    eq DecimalNumber DecimalNumber = true
-    eq LetterNumber LetterNumber = true
-    eq OtherNumber OtherNumber = true
-    eq ConnectorPunctuation ConnectorPunctuation = true
-    eq DashPunctuation DashPunctuation = true
-    eq OpenPunctuation OpenPunctuation = true
-    eq ClosePunctuation ClosePunctuation = true
-    eq InitialQuote InitialQuote = true
-    eq FinalQuote FinalQuote = true
-    eq OtherPunctuation OtherPunctuation = true
-    eq MathSymbol MathSymbol = true
-    eq CurrencySymbol CurrencySymbol = true
-    eq ModifierSymbol ModifierSymbol = true
-    eq OtherSymbol OtherSymbol = true
-    eq Space Space = true
-    eq LineSeparator LineSeparator = true
-    eq ParagraphSeparator ParagraphSeparator = true
-    eq Control Control = true
-    eq Format Format = true
-    eq Surrogate Surrogate = true
-    eq PrivateUse PrivateUse = true
-    eq NotAssigned NotAssigned = true
-    eq _ _ = false
+  eq UppercaseLetter UppercaseLetter = true
+  eq LowercaseLetter LowercaseLetter = true
+  eq TitlecaseLetter TitlecaseLetter = true
+  eq ModifierLetter ModifierLetter = true
+  eq OtherLetter OtherLetter = true
+  eq NonSpacingMark NonSpacingMark = true
+  eq SpacingCombiningMark SpacingCombiningMark = true
+  eq EnclosingMark EnclosingMark = true
+  eq DecimalNumber DecimalNumber = true
+  eq LetterNumber LetterNumber = true
+  eq OtherNumber OtherNumber = true
+  eq ConnectorPunctuation ConnectorPunctuation = true
+  eq DashPunctuation DashPunctuation = true
+  eq OpenPunctuation OpenPunctuation = true
+  eq ClosePunctuation ClosePunctuation = true
+  eq InitialQuote InitialQuote = true
+  eq FinalQuote FinalQuote = true
+  eq OtherPunctuation OtherPunctuation = true
+  eq MathSymbol MathSymbol = true
+  eq CurrencySymbol CurrencySymbol = true
+  eq ModifierSymbol ModifierSymbol = true
+  eq OtherSymbol OtherSymbol = true
+  eq Space Space = true
+  eq LineSeparator LineSeparator = true
+  eq ParagraphSeparator ParagraphSeparator = true
+  eq Control Control = true
+  eq Format Format = true
+  eq Surrogate Surrogate = true
+  eq PrivateUse PrivateUse = true
+  eq NotAssigned NotAssigned = true
+  eq _ _ = false
 
 instance ordGeneralCategory :: Ord GeneralCategory where
-    compare catA catB = compare (generalCatToInt catA) (generalCatToInt catB)
+  compare catA catB = compare (generalCatToInt catA) (generalCatToInt catB)
 
 instance boundedGeneralCategory :: Bounded GeneralCategory where
-    bottom = UppercaseLetter
-    top = NotAssigned
+  bottom = UppercaseLetter
+  top = NotAssigned
 
 -- | The Unicode general category of the character.
 -- |
@@ -370,12 +370,12 @@ isSpace :: CodePoint -> Boolean
 -- The magic 0x377 used in the code below isn't really that magical. As of
 -- 2014, all the codepoints at or below 0x377 have been assigned, so we
 -- shouldn't have to worry about any new spaces appearing below there.
-isSpace c = if uc <= 0x337
-               then uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
-               else uIswspace uc
+isSpace c =
+  if uc <= 0x337 then uc == 32 || (uc >= 9 && uc <= 13) || uc == 0xa0
+  else uIswspace uc
   where
-    uc :: Int
-    uc = fromEnum c
+  uc :: Int
+  uc = fromEnum c
 
 -- | Selects upper-case or title-case alphabetic Unicode characters (letters).
 -- | Title case is used by a small number of letter ligatures like the
@@ -402,20 +402,26 @@ isAlphaNum = uIswalnum <<< fromEnum
 
 -- | Selects ASCII decimal digits, i.e. `0..9`.
 isDecDigit :: CodePoint -> Boolean
-isDecDigit c = let diff = (fromEnum c - toCharCode '0')
-            in diff <= 9 && diff >= 0
+isDecDigit c =
+  let
+    diff = (fromEnum c - toCharCode '0')
+  in
+    diff <= 9 && diff >= 0
 
 -- | Selects ASCII octal digits, i.e. `0..7`.
 isOctDigit :: CodePoint -> Boolean
-isOctDigit c = let diff = (fromEnum c - toCharCode '0')
-               in diff <= 7 && diff >= 0
+isOctDigit c =
+  let
+    diff = (fromEnum c - toCharCode '0')
+  in
+    diff <= 7 && diff >= 0
 
 -- | Selects ASCII hexadecimal digits,
 -- | i.e. `0..9, A..F, a..f`.
 isHexDigit :: CodePoint -> Boolean
 isHexDigit c = isDecDigit c
-            || (let diff = (fromEnum c - toCharCode 'A') in diff <= 5 && diff >= 0)
-            || (let diff = (fromEnum c - toCharCode 'a') in diff <= 5 && diff >= 0)
+  || (let diff = (fromEnum c - toCharCode 'A') in diff <= 5 && diff >= 0)
+  || (let diff = (fromEnum c - toCharCode 'a') in diff <= 5 && diff >= 0)
 
 isDigit :: Warn (Text "'isDigit' is deprecated, use 'isDecDigit', 'isHexDigit', or 'isOctDigit' instead") => CodePoint -> Boolean
 isDigit = isDecDigit
@@ -459,15 +465,15 @@ isDigit = isDecDigit
 -- | ```
 isPunctuation :: CodePoint -> Boolean
 isPunctuation c =
-    case generalCategory c of
-        Just ConnectorPunctuation    -> true
-        Just DashPunctuation         -> true
-        Just OpenPunctuation         -> true
-        Just ClosePunctuation        -> true
-        Just InitialQuote            -> true
-        Just FinalQuote              -> true
-        Just OtherPunctuation        -> true
-        _                            -> false
+  case generalCategory c of
+    Just ConnectorPunctuation -> true
+    Just DashPunctuation -> true
+    Just OpenPunctuation -> true
+    Just ClosePunctuation -> true
+    Just InitialQuote -> true
+    Just FinalQuote -> true
+    Just OtherPunctuation -> true
+    _ -> false
 
 -- | Selects Unicode symbol characters, including mathematical and
 -- | currency symbols.
@@ -509,12 +515,12 @@ isPunctuation c =
 -- | ```
 isSymbol :: CodePoint -> Boolean
 isSymbol c =
-    case generalCategory c of
-        Just MathSymbol              -> true
-        Just CurrencySymbol          -> true
-        Just ModifierSymbol          -> true
-        Just OtherSymbol             -> true
-        _                            -> false
+  case generalCategory c of
+    Just MathSymbol -> true
+    Just CurrencySymbol -> true
+    Just ModifierSymbol -> true
+    Just OtherSymbol -> true
+    _ -> false
 
 -- | Convert a code point to the corresponding upper-case sequence of code points.
 -- | Any other character is returned unchanged.
@@ -582,21 +588,21 @@ caseFoldSimple = modify Casing.fold
 hexDigitToInt :: CodePoint -> Maybe Int
 hexDigitToInt c = result
   where
-    result :: Maybe Int
-    result
-      | dec      <= 9 && dec      >= 0 = Just dec
-      | hexLower <= 5 && hexLower >= 0 = Just $ hexLower + 10
-      | hexUpper <= 5 && hexUpper >= 0 = Just $ hexUpper + 10
-      | otherwise                      = Nothing
+  result :: Maybe Int
+  result
+    | dec <= 9 && dec >= 0 = Just dec
+    | hexLower <= 5 && hexLower >= 0 = Just $ hexLower + 10
+    | hexUpper <= 5 && hexUpper >= 0 = Just $ hexUpper + 10
+    | otherwise = Nothing
 
-    dec :: Int
-    dec = fromEnum c - toCharCode '0'
+  dec :: Int
+  dec = fromEnum c - toCharCode '0'
 
-    hexLower :: Int
-    hexLower = fromEnum c - toCharCode 'a'
+  hexLower :: Int
+  hexLower = fromEnum c - toCharCode 'a'
 
-    hexUpper :: Int
-    hexUpper = fromEnum c - toCharCode 'A'
+  hexUpper :: Int
+  hexUpper = fromEnum c - toCharCode 'A'
 
 -- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
 -- | satisfies `isDecDigit` (one of `0..9`). Anything else converts to `Nothing`
@@ -613,7 +619,7 @@ hexDigitToInt c = result
 decDigitToInt :: CodePoint -> Maybe Int
 decDigitToInt c
   | isDecDigit c = Just $ fromEnum c - toCharCode '0'
-  | otherwise    = Nothing
+  | otherwise = Nothing
 
 -- | Convert a single digit `Char` to the corresponding `Just Int` if its argument
 -- | satisfies `isOctDigit` (one of `0..7`). Anything else converts to `Nothing`
@@ -630,7 +636,7 @@ decDigitToInt c
 octDigitToInt :: CodePoint -> Maybe Int
 octDigitToInt c
   | isOctDigit c = Just $ fromEnum c - toCharCode '0'
-  | otherwise    = Nothing
+  | otherwise = Nothing
 
 digitToInt :: Warn (Text "'digitToInt' is deprecated, use 'decDigitToInt', 'hexDigitToInt', or 'octDigitToInt' instead") => CodePoint -> Maybe Int
 digitToInt = hexDigitToInt
@@ -683,13 +689,13 @@ digitToInt = hexDigitToInt
 -- | ```
 isLetter :: CodePoint -> Boolean
 isLetter c =
-    case generalCategory c of
-        Just UppercaseLetter         -> true
-        Just LowercaseLetter         -> true
-        Just TitlecaseLetter         -> true
-        Just ModifierLetter          -> true
-        Just OtherLetter             -> true
-        _                            -> false
+  case generalCategory c of
+    Just UppercaseLetter -> true
+    Just LowercaseLetter -> true
+    Just TitlecaseLetter -> true
+    Just ModifierLetter -> true
+    Just OtherLetter -> true
+    _ -> false
 
 -- | Selects Unicode mark characters, for example accents and the
 -- | like, which combine with preceding characters.
@@ -733,11 +739,11 @@ isLetter c =
 -- | ```
 isMark :: CodePoint -> Boolean
 isMark c =
-    case generalCategory c of
-        Just NonSpacingMark          -> true
-        Just SpacingCombiningMark    -> true
-        Just EnclosingMark           -> true
-        _                            -> false
+  case generalCategory c of
+    Just NonSpacingMark -> true
+    Just SpacingCombiningMark -> true
+    Just EnclosingMark -> true
+    _ -> false
 
 -- | Selects Unicode numeric characters, including digits from various
 -- | scripts, Roman numerals, et cetera.
@@ -782,11 +788,11 @@ isMark c =
 -- | ```
 isNumber :: CodePoint -> Boolean
 isNumber c =
-    case generalCategory c of
-        Just DecimalNumber           -> true
-        Just LetterNumber            -> true
-        Just OtherNumber             -> true
-        _                            -> false
+  case generalCategory c of
+    Just DecimalNumber -> true
+    Just LetterNumber -> true
+    Just OtherNumber -> true
+    _ -> false
 
 -- | Selects Unicode space and separator characters.
 -- |
@@ -835,11 +841,11 @@ isNumber c =
 -- | ```
 isSeparator :: CodePoint -> Boolean
 isSeparator c =
-    case generalCategory c of
-        Just Space                   -> true
-        Just LineSeparator           -> true
-        Just ParagraphSeparator      -> true
-        _                            -> false
+  case generalCategory c of
+    Just Space -> true
+    Just LineSeparator -> true
+    Just ParagraphSeparator -> true
+    _ -> false
 
 -- Helper functions
 modify :: (Int -> Int) -> (CodePoint -> CodePoint)
