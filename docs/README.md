@@ -10,6 +10,7 @@ The [Data.CodePoint.Unicode.Internal](../src/Data/CodePoint/Unicode/Internal.pur
 $ ./download.sh
 $ ./ubconfc < UnicodeData.txt > src/Data/CodePoint/Unicode/Internal.purs
 $ ./fullcase.js
+$ purs-tidy format-in-place src/Data/CodePoint/Unicode/Internal.purs src/Data/CodePoint/Unicode/Internal/Casing.purs
 ```
 
 (Note that this downloads data according to the version stored in the [`unicode-version`](../unicode-version) file in the root.)

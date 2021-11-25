@@ -27,7 +27,6 @@ echo
 # Define structures
 
 cat <<EOF
-
 module Data.CodePoint.Unicode.Internal where
 
 import Prelude
@@ -39,97 +38,106 @@ import Partial.Unsafe (unsafePartial)
 
 -- Unicode general categories, listed in the same order as in the Unicode
 -- standard. This must be the same order as in GHC.Unicode.
-data UnicodeCategory = NUMCAT_LU  -- Letter, Uppercase
-                     | NUMCAT_LL  -- Letter, Lowercase
-                     | NUMCAT_LT  -- Letter, Titlecase
-                     | NUMCAT_LM  -- Letter, Modifier
-                     | NUMCAT_LO  -- Letter, Other
-                     | NUMCAT_MN  -- Mark, Non-Spacing
-                     | NUMCAT_MC  -- Mark, Spacing Combining
-                     | NUMCAT_ME  -- Mark, Enclosing
-                     | NUMCAT_ND  -- Number, Decimal
-                     | NUMCAT_NL  -- Number, Letter
-                     | NUMCAT_NO  -- Number, Other
-                     | NUMCAT_PC  -- Punctuation, Connector
-                     | NUMCAT_PD  -- Punctuation, Dash
-                     | NUMCAT_PS  -- Punctuation, Open
-                     | NUMCAT_PE  -- Punctuation, Close
-                     | NUMCAT_PI  -- Punctuation, Initial quote
-                     | NUMCAT_PF  -- Punctuation, Final quote
-                     | NUMCAT_PO  -- Punctuation, Other
-                     | NUMCAT_SM  -- Symbol, Math
-                     | NUMCAT_SC  -- Symbol, Currency
-                     | NUMCAT_SK  -- Symbol, Modifier
-                     | NUMCAT_SO  -- Symbol, Other
-                     | NUMCAT_ZS  -- Separator, Space
-                     | NUMCAT_ZL  -- Separator, Line
-                     | NUMCAT_ZP  -- Separator, Paragraph
-                     | NUMCAT_CC  -- Other, Control
-                     | NUMCAT_CF  -- Other, Format
-                     | NUMCAT_CS  -- Other, Surrogate
-                     | NUMCAT_CO  -- Other, Private Use
-                     | NUMCAT_CN  -- Other, Not Assigned
+data UnicodeCategory
+  = NUMCAT_LU -- Letter, Uppercase
+  | NUMCAT_LL -- Letter, Lowercase
+  | NUMCAT_LT -- Letter, Titlecase
+  | NUMCAT_LM -- Letter, Modifier
+  | NUMCAT_LO -- Letter, Other
+  | NUMCAT_MN -- Mark, Non-Spacing
+  | NUMCAT_MC -- Mark, Spacing Combining
+  | NUMCAT_ME -- Mark, Enclosing
+  | NUMCAT_ND -- Number, Decimal
+  | NUMCAT_NL -- Number, Letter
+  | NUMCAT_NO -- Number, Other
+  | NUMCAT_PC -- Punctuation, Connector
+  | NUMCAT_PD -- Punctuation, Dash
+  | NUMCAT_PS -- Punctuation, Open
+  | NUMCAT_PE -- Punctuation, Close
+  | NUMCAT_PI -- Punctuation, Initial quote
+  | NUMCAT_PF -- Punctuation, Final quote
+  | NUMCAT_PO -- Punctuation, Other
+  | NUMCAT_SM -- Symbol, Math
+  | NUMCAT_SC -- Symbol, Currency
+  | NUMCAT_SK -- Symbol, Modifier
+  | NUMCAT_SO -- Symbol, Other
+  | NUMCAT_ZS -- Separator, Space
+  | NUMCAT_ZL -- Separator, Line
+  | NUMCAT_ZP -- Separator, Paragraph
+  | NUMCAT_CC -- Other, Control
+  | NUMCAT_CF -- Other, Format
+  | NUMCAT_CS -- Other, Surrogate
+  | NUMCAT_CO -- Other, Private Use
+  | NUMCAT_CN -- Other, Not Assigned
 
 instance showUnicodeCategory :: Show UnicodeCategory where
-    show NUMCAT_LU = "NUMCAT_LU"
-    show NUMCAT_LL = "NUMCAT_LL"
-    show NUMCAT_LT = "NUMCAT_LT"
-    show NUMCAT_LM = "NUMCAT_LM"
-    show NUMCAT_LO = "NUMCAT_LO"
-    show NUMCAT_MN = "NUMCAT_MN"
-    show NUMCAT_MC = "NUMCAT_MC"
-    show NUMCAT_ME = "NUMCAT_ME"
-    show NUMCAT_ND = "NUMCAT_ND"
-    show NUMCAT_NL = "NUMCAT_NL"
-    show NUMCAT_NO = "NUMCAT_NO"
-    show NUMCAT_PC = "NUMCAT_PC"
-    show NUMCAT_PD = "NUMCAT_PD"
-    show NUMCAT_PS = "NUMCAT_PS"
-    show NUMCAT_PE = "NUMCAT_PE"
-    show NUMCAT_PI = "NUMCAT_PI"
-    show NUMCAT_PF = "NUMCAT_PF"
-    show NUMCAT_PO = "NUMCAT_PO"
-    show NUMCAT_SM = "NUMCAT_SM"
-    show NUMCAT_SC = "NUMCAT_SC"
-    show NUMCAT_SK = "NUMCAT_SK"
-    show NUMCAT_SO = "NUMCAT_SO"
-    show NUMCAT_ZS = "NUMCAT_ZS"
-    show NUMCAT_ZL = "NUMCAT_ZL"
-    show NUMCAT_ZP = "NUMCAT_ZP"
-    show NUMCAT_CC = "NUMCAT_CC"
-    show NUMCAT_CF = "NUMCAT_CF"
-    show NUMCAT_CS = "NUMCAT_CS"
-    show NUMCAT_CO = "NUMCAT_CO"
-    show NUMCAT_CN = "NUMCAT_CN"
+  show NUMCAT_LU = "NUMCAT_LU"
+  show NUMCAT_LL = "NUMCAT_LL"
+  show NUMCAT_LT = "NUMCAT_LT"
+  show NUMCAT_LM = "NUMCAT_LM"
+  show NUMCAT_LO = "NUMCAT_LO"
+  show NUMCAT_MN = "NUMCAT_MN"
+  show NUMCAT_MC = "NUMCAT_MC"
+  show NUMCAT_ME = "NUMCAT_ME"
+  show NUMCAT_ND = "NUMCAT_ND"
+  show NUMCAT_NL = "NUMCAT_NL"
+  show NUMCAT_NO = "NUMCAT_NO"
+  show NUMCAT_PC = "NUMCAT_PC"
+  show NUMCAT_PD = "NUMCAT_PD"
+  show NUMCAT_PS = "NUMCAT_PS"
+  show NUMCAT_PE = "NUMCAT_PE"
+  show NUMCAT_PI = "NUMCAT_PI"
+  show NUMCAT_PF = "NUMCAT_PF"
+  show NUMCAT_PO = "NUMCAT_PO"
+  show NUMCAT_SM = "NUMCAT_SM"
+  show NUMCAT_SC = "NUMCAT_SC"
+  show NUMCAT_SK = "NUMCAT_SK"
+  show NUMCAT_SO = "NUMCAT_SO"
+  show NUMCAT_ZS = "NUMCAT_ZS"
+  show NUMCAT_ZL = "NUMCAT_ZL"
+  show NUMCAT_ZP = "NUMCAT_ZP"
+  show NUMCAT_CC = "NUMCAT_CC"
+  show NUMCAT_CF = "NUMCAT_CF"
+  show NUMCAT_CS = "NUMCAT_CS"
+  show NUMCAT_CO = "NUMCAT_CO"
+  show NUMCAT_CN = "NUMCAT_CN"
 
-newtype ConversionRule = ConversionRule { category   :: Int
-                                        , unicodeCat :: UnicodeCategory
-                                        , possible   :: Int
-                                        , updist     :: Int
-                                        , lowdist    :: Int
-                                        , titledist  :: Int
-                                        }
+newtype ConversionRule = ConversionRule
+  { category :: Int
+  , unicodeCat :: UnicodeCategory
+  , possible :: Int
+  , updist :: Int
+  , lowdist :: Int
+  , titledist :: Int
+  }
 
 instance showConversionRule :: Show ConversionRule where
-    show (ConversionRule rule) = "ConversionRule { category: " <> show rule.category
-                              <> ", unicodeCat: " <> show rule.unicodeCat
-                              <> ", possible: " <> show rule.possible
-                              <> ", updist: " <> show rule.updist
-                              <> ", lowdist: " <> show rule.lowdist
-                              <> ", titledist: " <> show rule.titledist
-                              <> " }"
+  show (ConversionRule rule) = "ConversionRule { category: " <> show rule.category
+    <> ", unicodeCat: "
+    <> show rule.unicodeCat
+    <> ", possible: "
+    <> show rule.possible
+    <> ", updist: "
+    <> show rule.updist
+    <> ", lowdist: "
+    <> show rule.lowdist
+    <> ", titledist: "
+    <> show rule.titledist
+    <> " }"
 
-newtype CharBlock = CharBlock { start    :: Int
-                              , length   :: Int
-                              , convRule :: ConversionRule
-                              }
+newtype CharBlock = CharBlock
+  { start :: Int
+  , length :: Int
+  , convRule :: ConversionRule
+  }
 
 instance showCharBlock :: Show CharBlock where
-    show (CharBlock rule) = "CharBlock { start: " <> show rule.start
-                         <> ", length: " <> show rule.length
-                         <> ", convRule: " <> show rule.convRule
-                         <> " }"
-
+  show (CharBlock rule) = "CharBlock { start: " <> show rule.start
+    <> ", length: "
+    <> show rule.length
+    <> ", convRule: "
+    <> show rule.convRule
+    <> " }"
 
 EOF
 
@@ -285,31 +293,31 @@ END {
 	}
 
 	print "allchars :: Array CharBlock"
-	printf "allchars = [ "
+	print "allchars ="
 	for(i = 0; i < blockidx; i++)
 	{
-		printf (i>0) ? "           , " : ""
+		printf (i>0) ? "  , " : "  [ "
 		printf blocks[i] "\n"
 	}
-	print "           ]\n"
+	print "  ]\n"
 
 	print "convchars :: Array CharBlock"
-	printf "convchars = [ "
+	print "convchars ="
 	for(i = 0; i < cblckidx; i++)
 	{
-		printf (i>0) ? "            , " : ""
+		printf (i>0) ? "  , " : "  [ "
 		printf cblcks[i] "\n"
 	}
-	print "            ]\n"
+	print "  ]\n"
 
 	print "spacechars :: Array CharBlock"
-	printf "spacechars = [ "
+	print "spacechars ="
 	for(i = 0; i < sblckidx; i++)
 	{
-		printf (i>0) ? "             , " : ""
+		printf (i>0) ? "  , " : "  [ "
 		printf sblcks[i] "\n"
 	}
-	print "             ]\n"
+	print "  ]"
 }
 '
 #	Output the C procedures code
@@ -331,34 +339,39 @@ nullrule = ConversionRule { category: gencatLU, unicodeCat: NUMCAT_CN, possible:
 
 blkCmp :: CharBlock -> CharBlock -> Ordering
 blkCmp (CharBlock key) (CharBlock cur)
-    | key.start >= cur.start && key.start < (cur.start + cur.length) = EQ
-    | key.start > cur.start                                          = GT
-    | otherwise                                                      = LT
-
+  | key.start >= cur.start && key.start < (cur.start + cur.length) = EQ
+  | key.start > cur.start = GT
+  | otherwise = LT
 
 -- TODO: This might be better if it returned Nothing instead of the nullrule.
 getRule :: Array CharBlock -> Int -> Int -> Maybe ConversionRule
 getRule blocks unichar size =
-    -- TODO: does using the nullrule make sense here?
-    let key = CharBlock { start: unichar, length: 1, convRule: nullrule }
-        maybeCharBlock = bsearch key blocks size blkCmp
-    in case maybeCharBlock of
-        Nothing -> Nothing
-        Just (CharBlock charBlock) -> Just charBlock.convRule
+  -- TODO: does using the nullrule make sense here?
+  let
+    key = CharBlock { start: unichar, length: 1, convRule: nullrule }
+    maybeCharBlock = bsearch key blocks size blkCmp
+  in
+    case maybeCharBlock of
+      Nothing -> Nothing
+      Just (CharBlock charBlock) -> Just charBlock.convRule
 
 -- The third argument is a  size.  It says to only look at this many elements
 -- in the array.  There are times when we don't want to look at ALL the
 -- elements, but only a subset.
-bsearch :: forall a . a -> Array a -> Int -> (a -> a -> Ordering) -> Maybe a
+bsearch :: forall a. a -> Array a -> Int -> (a -> a -> Ordering) -> Maybe a
 bsearch a array size compare = go 0 size
-    where
-    go i k | i > k || i >= Array.length array = Nothing
-           | otherwise = let j = floor (toNumber (i + k) / 2.0)
-                             b = unsafePartial (Array.unsafeIndex array j)
-                         in case compare a b of
-                              EQ -> Just b
-                              GT -> go (j + 1) k
-                              _  -> go i (j - 1)
+  where
+  go i k
+    | i > k || i >= Array.length array = Nothing
+    | otherwise =
+        let
+          j = floor (toNumber (i + k) / 2.0)
+          b = unsafePartial (Array.unsafeIndex array j)
+        in
+          case compare a b of
+            EQ -> Just b
+            GT -> go (j + 1) k
+            _ -> go i (j - 1)
 
 -- Check whether a character (internal code) has certain attributes.
 -- Attributes (category flags) may be ORed. The function ANDs
@@ -367,29 +380,52 @@ bsearch a array size compare = go 0 size
 -- the result will be nonzero.
 checkAttr :: Array Int -> Int -> Boolean
 checkAttr categories char =
-    let numOfBlocks = if char < 256 then numLat1Blocks else numBlocks
-        maybeConversionRule = getRule allchars char numOfBlocks
-    in case maybeConversionRule of
-            Nothing -> false
-            Just (ConversionRule rule) -> isJust (Array.elemIndex rule.category categories)
+  let
+    numOfBlocks = if char < 256 then numLat1Blocks else numBlocks
+    maybeConversionRule = getRule allchars char numOfBlocks
+  in
+    case maybeConversionRule of
+      Nothing -> false
+      Just (ConversionRule rule) -> isJust (Array.elemIndex rule.category categories)
 
 checkAttrS :: Array Int -> Int -> Boolean
 checkAttrS categories char =
-    let maybeConversionRule = getRule spacechars char numSpaceBlocks
-    in case maybeConversionRule of
-            Nothing -> false
-            Just (ConversionRule rule) -> isJust (Array.elemIndex rule.category categories)
+  let
+    maybeConversionRule = getRule spacechars char numSpaceBlocks
+  in
+    case maybeConversionRule of
+      Nothing -> false
+      Just (ConversionRule rule) -> isJust (Array.elemIndex rule.category categories)
 
 uIswcntrl :: Int -> Boolean
 uIswcntrl = checkAttr [ gencatCC ]
 
 uIswprint :: Int -> Boolean
 uIswprint = checkAttr
-    [ gencatMC, gencatNO, gencatSK, gencatME, gencatND, gencatPO
-    , gencatLT, gencatPC, gencatSM, gencatZS, gencatLU, gencatPD
-    , gencatSO, gencatPE, gencatPF, gencatPS, gencatSC, gencatLL
-    , gencatLM, gencatPI, gencatNL, gencatMN, gencatLO
-    ]
+  [ gencatMC
+  , gencatNO
+  , gencatSK
+  , gencatME
+  , gencatND
+  , gencatPO
+  , gencatLT
+  , gencatPC
+  , gencatSM
+  , gencatZS
+  , gencatLU
+  , gencatPD
+  , gencatSO
+  , gencatPE
+  , gencatPF
+  , gencatPS
+  , gencatSC
+  , gencatLL
+  , gencatLM
+  , gencatPI
+  , gencatNL
+  , gencatMN
+  , gencatLO
+  ]
 
 uIswupper :: Int -> Boolean
 uIswupper = checkAttr [ gencatLU, gencatLT ]
@@ -405,9 +441,18 @@ uIswdigit = checkAttr [ gencatND ]
 
 uIswalnum :: Int -> Boolean
 uIswalnum = checkAttr
-    [ gencatLT, gencatLU, gencatLL, gencatLM, gencatLO, gencatMC, gencatME
-    , gencatMN, gencatNO, gencatND, gencatNL
-    ]
+  [ gencatLT
+  , gencatLU
+  , gencatLL
+  , gencatLM
+  , gencatLO
+  , gencatMC
+  , gencatME
+  , gencatMN
+  , gencatNO
+  , gencatND
+  , gencatNL
+  ]
 
 uIswspace :: Int -> Boolean
 uIswspace = checkAttrS [ gencatZS ]
@@ -418,10 +463,12 @@ uIswspace = checkAttrS [ gencatZS ]
 
 caseConv :: (ConversionRule -> Int) -> Int -> Int
 caseConv f char =
-    let maybeConversionRule = getRule convchars char numConvBlocks
-    in case maybeConversionRule of
-        Nothing -> char
-        Just conversionRule -> char + f conversionRule
+  let
+    maybeConversionRule = getRule convchars char numConvBlocks
+  in
+    case maybeConversionRule of
+      Nothing -> char
+      Just conversionRule -> char + f conversionRule
 
 uTowupper :: Int -> Int
 uTowupper = caseConv (\(ConversionRule rule) -> rule.updist)
@@ -434,7 +481,9 @@ uTowtitle = caseConv (\(ConversionRule rule) -> rule.titledist)
 
 uGencat :: Int -> Maybe UnicodeCategory
 uGencat char =
-    let conversionRule = getRule allchars char numBlocks
-    in map (\(ConversionRule rule) -> rule.unicodeCat) conversionRule
+  let
+    conversionRule = getRule allchars char numBlocks
+  in
+    map (\(ConversionRule rule) -> rule.unicodeCat) conversionRule
 
 EOF
