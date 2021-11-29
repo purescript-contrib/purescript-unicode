@@ -36,7 +36,7 @@ const keys = scKeys.concat(cfKeys).sort(sortHex);
 const data = {};
 
 const hex = a => a ? '0x'+a : '0';
-const hexes = a => a ? '[' + a.split(' ').filter(b=>b).map(hex) + ']' : '[]';
+const hexes = a => a ? '[ ' + a.split(' ').filter(b=>b).map(hex).join(', ') + ' ]' : '[]';
 
 for (let code of keys) {
   const d = { code: hex(code) };
@@ -70,19 +70,18 @@ import Data.CodePoint.Unicode.Internal (bsearch, uTowlower, uTowtitle, uTowupper
 import Data.Maybe (Maybe(..))
 
 type CaseRec =
-  {
-    code :: Int,
-    lower :: Array Int,
-    title :: Array Int,
-    upper :: Array Int,
-    fold :: Int,
-    foldFull :: Array Int
+  { code :: Int
+  , lower :: Array Int
+  , title :: Array Int
+  , upper :: Array Int
+  , fold :: Int
+  , foldFull :: Array Int
   }
 
 rules :: Array CaseRec
-rules = [
-  ${lines.join(",\n  ")}
-]
+rules =
+  ${lines.map((v, i) => i ? ", " + v : "[ " + v).join("\n  ")}
+  ]
 
 zeroRec :: Int -> CaseRec
 zeroRec code = { code, lower: [], title: [], upper: [], fold: 0, foldFull: [] }
@@ -97,28 +96,38 @@ findRule code = case bsearch (zeroRec code) rules (Array.length rules) recCmp of
 
 fold :: Int -> Int
 fold code =
-  let folded = (findRule code).fold
-  in if folded == 0 then uTowlower code else folded
+  let
+    folded = (findRule code).fold
+  in
+    if folded == 0 then uTowlower code else folded
 
 foldFull :: Int -> Array Int
 foldFull code =
-  let folded = (findRule code).foldFull
-  in if Array.null folded then [uTowlower code] else folded
+  let
+    folded = (findRule code).foldFull
+  in
+    if Array.null folded then [ uTowlower code ] else folded
 
 lower :: Int -> Array Int
 lower code =
-  let lowered = (findRule code).lower
-  in if Array.null lowered then [uTowlower code] else lowered
+  let
+    lowered = (findRule code).lower
+  in
+    if Array.null lowered then [ uTowlower code ] else lowered
 
 title :: Int -> Array Int
 title code =
-  let titled = (findRule code).title
-  in if Array.null titled then [uTowtitle code] else titled
+  let
+    titled = (findRule code).title
+  in
+    if Array.null titled then [ uTowtitle code ] else titled
 
 upper :: Int -> Array Int
 upper code =
-  let uppered = (findRule code).upper
-  in if Array.null uppered then [uTowupper code] else uppered
+  let
+    uppered = (findRule code).upper
+  in
+    if Array.null uppered then [ uTowupper code ] else uppered
 `;
 
 fs.writeFileSync("src/Data/CodePoint/Unicode/Internal/Casing.purs", file);
