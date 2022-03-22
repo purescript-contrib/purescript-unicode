@@ -12,7 +12,6 @@
   , "maybe"
   , "partial"
   , "prelude"
-  , "psci-support"
   , "quickcheck"
   , "random"
   , "strings"
