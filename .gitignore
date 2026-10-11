@@ -17,3 +17,4 @@ SpecialCasing.txt
 node_modules
 package-lock.json
 *.lock
+!spago.lock
